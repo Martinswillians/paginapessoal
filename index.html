@@ -178,6 +178,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content
 .stagger.visible > *:nth-child(4){opacity:1;transform:translateY(0);transition-delay:.35s}
 .stagger.visible > *:nth-child(5){opacity:1;transform:translateY(0);transition-delay:.45s}
 .stagger.visible > *:nth-child(6){opacity:1;transform:translateY(0);transition-delay:.55s}
+.stagger.visible > *:nth-child(7){opacity:1;transform:translateY(0);transition-delay:.65s}
+.stagger.visible > *:nth-child(8){opacity:1;transform:translateY(0);transition-delay:.75s}
+.stagger.visible > *:nth-child(9){opacity:1;transform:translateY(0);transition-delay:.85s}
+.stagger.visible > *:nth-child(10){opacity:1;transform:translateY(0);transition-delay:.95s}
 
 /* PROJECT CARDS — visual banner */
 .proj-banner{height:90px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:-1.8rem -1.8rem 1.4rem -1.8rem}
@@ -691,12 +695,27 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       </div>
     </div>
 
-    <div class="site-card" style="grid-column:1 / -1">
-      <div class="site-preview" style="background:linear-gradient(135deg,#0a1220 0%,#112030 100%);height:100px">
+
+    <div class="site-card">
+      <div class="site-preview" style="background:linear-gradient(135deg,#0a1a2e 0%,#0d3058 100%)">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(96,165,250,.45)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/><path d="M2 12h2M12 2v2M19.07 4.93l-1.41 1.41"/></svg>
+      </div>
+      <div class="site-body">
+        <p class="site-title">Hora de Estudar — App de Estudos</p>
+        <p class="site-url">martinswillians.github.io/HoraDeEstudar/</p>
+        <p class="site-desc">Aplicação web para gestão e planejamento de estudos. Permite organizar matérias, cronogramas e acompanhar o progresso de aprendizagem de forma visual e intuitiva.</p>
+        <a href="https://martinswillians.github.io/HoraDeEstudar/" target="_blank" class="site-visit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Visitar app →
+        </a>
+      </div>
+    </div>
+    <div class="site-card">
+      <div class="site-preview" style="background:linear-gradient(135deg,#0a1220 0%,#112030 100%)">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(96,165,250,.4)" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       </div>
       <div class="site-body">
-        <p class="site-title">Manual DIOT — Dataprev</p>
+        <p class="site-title">Manual de Execução de Jobs</p>
         <p class="site-url">martinswillians.github.io/ManualDiot/</p>
         <p class="site-desc">Documentação técnica web interativa da Divisão de Gestão Operacional de Rotinas (DIOT/DEOC) da Dataprev. Guias, procedimentos e referências para operação de missão crítica.</p>
         <a href="https://martinswillians.github.io/ManualDiot/" target="_blank" class="site-visit">
