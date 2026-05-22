@@ -1541,9 +1541,17 @@ async function sendMsg(){
       var ok=document.getElementById('sent-ok');
       ok.style.display='flex';
       btn.textContent='Enviado ✓';btn.style.background='#14b8a6';
-      // WhatsApp via CallMeBot: ative em callmebot.com e substitua SEU_NUMERO e SUA_API_KEY
-      var waTxt=encodeURIComponent('Novo contato: '+n+' | '+e+' | '+a+' | '+m.slice(0,60));
-      fetch('https://api.callmebot.com/whatsapp.php?phone=+556174037037&text='+waTxt+'&apikey=6972185').catch(function(){});
+      // WhatsApp via CallMeBot — ATIVO
+      var waTxt=encodeURIComponent(
+        '📩 *Novo contato no portfólio!*%0A'
+        +'👤 *Nome:* '+n+'%0A'
+        +'📧 *Email:* '+e+'%0A'
+        +'📱 *Telefone:* '+(p||'Não informado')+'%0A'
+        +'📌 *Assunto:* '+a+'%0A'
+        +'💬 *Mensagem:* '+m.slice(0,120)
+      );
+      fetch('https://api.callmebot.com/whatsapp.php?phone=556174037037&text='+waTxt+'&apikey=6972185')
+        .catch(function(){});
       document.getElementById('cn').value='';
       document.getElementById('ce').value='';
       document.getElementById('cp').value='';
