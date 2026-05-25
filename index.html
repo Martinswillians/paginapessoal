@@ -293,11 +293,11 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
 /* MOBILE DRAWER */
-.mobile-nav{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(6,9,15,.97);backdrop-filter:blur(20px);z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2rem;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.mobile-nav{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(6,9,15,.97);backdrop-filter:blur(20px);z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding:5rem 2rem 2rem;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .3s ease}
 .mobile-nav.open{opacity:1;pointer-events:all}
-.mobile-nav a{font-family:var(--mono);font-size:1.1rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:color .2s;padding:.4rem 1rem}
+.mobile-nav a{font-family:var(--mono);font-size:.95rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:color .2s;padding:.65rem 1rem;width:100%;text-align:center;border-bottom:.5px solid rgba(255,255,255,.05)}
 .mobile-nav a:hover{color:var(--accent2)}
-.mobile-nav-close{position:absolute;top:1.2rem;right:1.2rem;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem;line-height:1}
+.mobile-nav-close{position:fixed;top:1rem;right:1.2rem;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem;line-height:1;z-index:260}
 
 /* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -668,6 +668,80 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .dep-grid{grid-template-columns:1fr}
 }
 
+/* ── SWIPE CAROUSEL (mobile only) ──────────────────── */
+.carousel-wrap{position:relative}
+.carousel-dots{
+  display:none;justify-content:center;gap:6px;
+  margin-top:1.2rem;
+}
+.carousel-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--border);border:none;cursor:pointer;
+  transition:background .25s,transform .25s;padding:0;
+}
+.carousel-dot.active{background:var(--accent2);transform:scale(1.3)}
+
+@media(max-width:768px){
+  /* ── All carousels ── */
+  .proj-grid,
+  .sites-grid,
+  .gh-grid,
+  .blog-grid,
+  .dep-grid{
+    display:flex !important;
+    overflow-x:scroll;
+    overflow-y:visible;
+    scroll-snap-type:x mandatory;
+    scroll-padding:0 1rem;
+    gap:1rem;
+    padding:0 1rem 1.2rem;
+    margin:0 -1.2rem;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    touch-action:pan-x;
+  }
+  .proj-grid::-webkit-scrollbar,
+  .sites-grid::-webkit-scrollbar,
+  .gh-grid::-webkit-scrollbar,
+  .blog-grid::-webkit-scrollbar,
+  .dep-grid::-webkit-scrollbar{display:none}
+
+  /* Card widths */
+  .proj-grid .proj-card{ min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start }
+  .sites-grid .site-card{ min-width:76vw;max-width:76vw;flex-shrink:0;scroll-snap-align:start }
+  .gh-grid .gh-card{ min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start }
+  .blog-grid .blog-card{ min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start }
+  .dep-grid .dep-card{ min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start }
+
+  /* Show dots */
+  .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:.8rem}
+}
+
+/* ── SHARE BUTTON ───────────────────────────────────── */
+.share-btn{
+  position:fixed;bottom:5.5rem;right:2rem;width:44px;height:44px;
+  border-radius:50%;background:var(--bg3);border:.5px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);z-index:500;opacity:0;pointer-events:none;
+  transform:translateY(12px);
+  transition:opacity .3s,transform .3s,background .2s,color .2s,border-color .2s;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.share-btn:hover{background:rgba(59,130,246,.1);color:var(--accent2);border-color:rgba(59,130,246,.3)}
+.share-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.share-btn svg{width:18px;height:18px}
+
+/* Share toast */
+.share-toast{
+  position:fixed;bottom:10rem;right:1.5rem;
+  font-family:var(--mono);font-size:.7rem;color:#fff;
+  background:rgba(20,184,166,.9);padding:.5rem 1rem;
+  border-radius:5px;opacity:0;pointer-events:none;
+  transition:opacity .3s;z-index:600;
+  backdrop-filter:blur(8px);
+}
+.share-toast.show{opacity:1}
+
 </style>
 <!-- Google Analytics GA4 -->
 <!-- Substitua G-N1T7YRMLEC pelo seu Measurement ID real no Google Analytics -->
@@ -698,6 +772,14 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
+<button class="share-btn" id="shareBtn" onclick="shareProfile()" aria-label="Compartilhar perfil">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+</button>
+<div class="share-toast" id="shareToast">Link copiado! 📋</div>
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
@@ -847,7 +929,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 <div class="section" id="projetos">
   <p class="sec-label">// 02. projetos</p>
   <h2 class="sec-title">O que construí</h2>
-  <div class="proj-grid">
+  <div class="carousel-wrap" id="cwProjetos">
+  <div class="proj-grid" id="projGrid">
 
     <div class="proj-card reveal">
       <div class="proj-banner" style="background:linear-gradient(135deg,#0a2a12 0%,#134d1e 100%)">
@@ -1065,6 +1148,7 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
     github.com/Martinswillians →
   </a>
   <p id="gh-status" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:1rem;opacity:.6">Carregando dados do GitHub...</p>
+  <div class="carousel-wrap" id="cwGH">
   <div class="gh-grid stagger" id="ghGrid">
 
     <a class="gh-card" href="https://github.com/Martinswillians/HoraDeEstudar" target="_blank">
@@ -1184,7 +1268,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 <div class="section" id="sites">
   <p class="sec-label">// 06. sites no ar</p>
   <h2 class="sec-title">Sites Desenvolvidos</h2>
-  <div class="sites-grid stagger">
+  <div class="carousel-wrap" id="cwSites">
+  <div class="sites-grid stagger" id="sitesGrid">
 
     <div class="site-card">
       <div class="site-preview" style="background:linear-gradient(135deg,#1a0a2e 0%,#2d1b4e 100%)">
@@ -1334,7 +1419,9 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       </div>
     </div>
 
-  </div>
+  </div><!-- /sites-grid -->
+  <div class="carousel-dots" id="dotsSites"></div>
+  </div><!-- /carousel-wrap -->
 </div>
 
 <div class="divider"></div>
@@ -1977,6 +2064,89 @@ function downloadCV() {
     btn.style.opacity = '1';
     window.print();
   }, 400);
+}
+
+
+/* ── CAROUSELS dot indicators ─────────────────────── */
+(function(){
+  function isMobile(){ return window.innerWidth<=768; }
+
+  function initCarousel(gridId,dotsId){
+    var grid=document.getElementById(gridId);
+    var dotsWrap=document.getElementById(dotsId);
+    if(!grid||!dotsWrap) return;
+    var items=grid.children;
+    var count=items.length;
+    if(!count) return;
+    dotsWrap.innerHTML='';
+    for(var i=0;i<count;i++){
+      var d=document.createElement('button');
+      d.className='carousel-dot'+(i===0?' active':'');
+      d.setAttribute('aria-label','Item '+(i+1));
+      (function(idx){
+        d.onclick=function(){
+          items[idx].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+        };
+      })(i);
+      dotsWrap.appendChild(d);
+    }
+    var dots=dotsWrap.querySelectorAll('.carousel-dot');
+    var ticking=false;
+    grid.addEventListener('scroll',function(){
+      if(ticking) return;
+      ticking=true;
+      requestAnimationFrame(function(){
+        var center=grid.scrollLeft+grid.offsetWidth/2;
+        var closest=0,minDist=Infinity;
+        for(var j=0;j<items.length;j++){
+          var el=items[j];
+          var dist=Math.abs(el.offsetLeft+el.offsetWidth/2-center);
+          if(dist<minDist){minDist=dist;closest=j;}
+        }
+        dots.forEach(function(d,i){d.classList.toggle('active',i===closest);});
+        ticking=false;
+      });
+    });
+  }
+
+  function initAll(){
+    if(!isMobile()) return;
+    initCarousel('projGrid','dotsProjetos');
+    initCarousel('sitesGrid','dotsSites');
+    initCarousel('ghGrid','dotsGH');
+  }
+  initAll();
+  var rt;
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(initAll,200);});
+})();
+
+/* ── SHARE BUTTON visibility ──────────────────────── */
+(function(){
+  var btn=document.getElementById('shareBtn');
+  if(!btn) return;
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>500) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
+})();
+
+/* ── SHARE PROFILE function ───────────────────────── */
+function shareProfile(){
+  var url='https://martinswillians.github.io/paginapessoal/';
+  var title='Willians Martins | Analista de TI';
+  var text='Portfolio do Willians Martins — Analista de TI, Scrum Master, missao critica.';
+  if(navigator.share){
+    navigator.share({title:title,text:text,url:url}).catch(function(){});
+  } else {
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(url).then(function(){
+        var t=document.getElementById('shareToast');
+        if(t){t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+      }).catch(function(){window.prompt('Copie o link:',url);});
+    } else {
+      window.prompt('Copie o link:',url);
+    }
+  }
 }
 
 </script>
