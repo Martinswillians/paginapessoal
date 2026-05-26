@@ -355,31 +355,28 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 /* ── TIMELINE ENHANCED ─────────────────────────────── */
 .exp-list{position:relative;display:flex;flex-direction:column;gap:0}
 .exp-list::before{
-  content:'';position:absolute;left:180px;top:0;bottom:0;width:2px;
+  content:'';position:absolute;left:130px;top:0;bottom:0;width:2px;
   background:var(--border);transform:translateX(-50%);
 }
 .exp-list::after{
-  content:'';position:absolute;left:180px;top:0;width:2px;height:0;
+  content:'';position:absolute;left:130px;top:0;width:2px;height:0;
   background:linear-gradient(to bottom,var(--accent),var(--teal));
   transform:translateX(-50%);transition:height 1.4s cubic-bezier(.4,0,.2,1);
   border-radius:2px;
 }
 .exp-list.line-drawn::after{height:100%}
 .exp-item{
-  display:grid;grid-template-columns:180px 1fr;gap:2rem;
+  display:grid;grid-template-columns:130px 1fr;gap:1.5rem;
   padding:2.2rem 0;position:relative;
 }
 .exp-item::before{
-  content:'';position:absolute;left:180px;top:2.6rem;
+  content:'';position:absolute;left:130px;top:2.6rem;
   width:14px;height:14px;border-radius:50%;
   background:var(--bg);border:2px solid var(--accent);
   transform:translateX(-50%);z-index:2;
   transition:background .3s,box-shadow .3s;
 }
-.exp-item:hover::before{
-  background:var(--accent);
-  box-shadow:0 0 0 5px rgba(59,130,246,.2),0 0 16px rgba(59,130,246,.4);
-}
+.exp-item:hover::before{background:var(--accent);box-shadow:0 0 0 5px rgba(59,130,246,.2),0 0 16px rgba(59,130,246,.4)}
 .exp-item.current::before{
   border-color:var(--teal);
   animation:tl-pulse 2.5s infinite;
@@ -396,10 +393,7 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   background:rgba(59,130,246,.07);border:.5px solid rgba(59,130,246,.2);border-radius:4px;
 }
 .exp-company-icon{width:20px;height:20px;border-radius:4px;object-fit:contain;flex-shrink:0}
-.exp-period{
-  font-family:var(--mono);font-size:.7rem;color:var(--muted);
-  text-align:right;padding-right:1.8rem;padding-top:.2rem;line-height:1.7;
-}
+.exp-period{font-family:var(--mono);font-size:.67rem;color:var(--muted);text-align:right;padding-right:1.2rem;padding-top:.2rem;line-height:1.65}
 .exp-duration{
   font-family:var(--mono);font-size:.6rem;color:rgba(107,122,150,.6);
   display:block;margin-top:.3rem;
@@ -491,7 +485,7 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   border-radius:10px;overflow:hidden;border:.5px solid var(--border);
   background:var(--bg3);height:200px;position:relative;
   display:flex;align-items:center;justify-content:center;
-  margin-bottom:1.5rem;
+  margin-bottom:1.5rem;width:100%;max-width:100%;
 }
 .bsb-map-wrap iframe{
   width:100%;height:100%;border:none;filter:invert(90%) hue-rotate(195deg) saturate(0.6) brightness(.9);
@@ -689,16 +683,15 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .blog-grid,
   .dep-grid{
     display:flex !important;
-    overflow-x:scroll;
-    overflow-y:visible;
-    scroll-snap-type:x mandatory;
-    scroll-padding:0 1rem;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x proximity;
     gap:1rem;
-    padding:0 1rem 1.2rem;
+    padding:0.2rem 1.2rem 1.4rem;
     margin:0 -1.2rem;
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
-    touch-action:pan-x;
+    overscroll-behavior-x:contain;
   }
   .proj-grid::-webkit-scrollbar,
   .sites-grid::-webkit-scrollbar,
@@ -706,15 +699,29 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .blog-grid::-webkit-scrollbar,
   .dep-grid::-webkit-scrollbar{display:none}
 
-  /* Card widths */
-  .proj-grid .proj-card{ min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start }
-  .sites-grid .site-card{ min-width:76vw;max-width:76vw;flex-shrink:0;scroll-snap-align:start }
-  .gh-grid .gh-card{ min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start }
-  .blog-grid .blog-card{ min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start }
-  .dep-grid .dep-card{ min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start }
+  /* Card widths — show 80% + peek of next */
+  .proj-grid .proj-card{min-width:82vw;max-width:82vw;flex-shrink:0;scroll-snap-align:start}
+  .sites-grid .site-card{min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start}
+  .gh-grid .gh-card{min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start}
+  .blog-grid .blog-card{min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start}
+  .dep-grid .dep-card{min-width:82vw;max-width:82vw;flex-shrink:0;scroll-snap-align:start}
 
   /* Show dots */
-  .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:.8rem}
+  .carousel-dots{display:flex !important;justify-content:center;gap:7px;margin-top:1rem}
+
+
+  /* Contact responsive */
+  .contato-wrap{grid-template-columns:1fr !important;gap:2rem}
+  .bsb-map-wrap{height:160px;margin-bottom:1rem}
+  .form-box{padding:1.4rem}
+  .form-grid{grid-template-columns:1fr}
+  /* Timeline mobile fix */
+  .exp-list::before,.exp-list::after{left:14px}
+  .exp-item{grid-template-columns:1fr;gap:.4rem;padding:1.4rem 0 1.4rem 2rem}
+  .exp-item::before{left:14px;top:1.6rem}
+  .exp-period{text-align:left;padding-right:0;padding-top:0;font-size:.68rem}
+  .exp-company-badge{font-size:.65rem}
+  .exp-title{font-size:1rem}
 }
 
 /* ── SHARE BUTTON ───────────────────────────────────── */
@@ -1011,9 +1018,10 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       </div>
     </div>
 
-  </div>
+  </div><!-- /proj-grid -->
+  <div class="carousel-dots" id="dotsProjetos"></div>
+  </div><!-- /cwProjetos -->
 </div>
-
 
 <div class="divider"></div>
 
@@ -1022,7 +1030,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <p class="sec-label">// 02b. artigos técnicos</p>
   <h2 class="sec-title">Blog</h2>
 
-  <div class="blog-grid stagger">
+  <div class="carousel-wrap" id="cwBlog">
+  <div class="blog-grid stagger" id="blogGrid">
 
     <!-- Article 1 -->
     <div class="blog-card reveal" onclick="openArticle('art1')">
@@ -1075,7 +1084,9 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       </div>
     </div>
 
-  </div>
+  </div><!-- /blog-grid -->
+  <div class="carousel-dots" id="dotsBlog"></div>
+  </div><!-- /cwBlog -->
 </div>
 
 <!-- ARTICLE MODAL -->
@@ -1093,7 +1104,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <p class="sec-label">// 02c. prova social</p>
   <h2 class="sec-title">Depoimentos</h2>
 
-  <div class="dep-grid stagger">
+  <div class="carousel-wrap" id="cwDep">
+  <div class="dep-grid stagger" id="depGrid">
 
     <div class="dep-card reveal">
       <p class="dep-quote">Willians tem uma capacidade rara de traduzir necessidades complexas do negócio em requisitos claros e implementáveis. No projeto do TJCE, sua atuação como Scrum Master foi fundamental para entregarmos dentro do prazo com qualidade.</p>
@@ -1131,7 +1143,9 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       </div>
     </div>
 
-  </div>
+  </div><!-- /dep-grid -->
+  <div class="carousel-dots" id="dotsDep"></div>
+  </div><!-- /cwDep -->
   <p style="font-family:var(--mono);font-size:.65rem;color:rgba(107,122,150,.5);margin-top:1.5rem;text-align:center">
     * Depoimentos baseados em interações profissionais reais. Nomes preservados com autorização.
   </p>
@@ -1259,7 +1273,9 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
       <div class="gh-live-row" id="gh-live-paginapessoal"><span class="gh-loading">carregando...</span></div>
     </a>
 
-  </div>
+  </div><!-- /gh-grid -->
+  <div class="carousel-dots" id="dotsGH"></div>
+  </div><!-- /cwGH -->
 </div>
 
 <div class="divider"></div>
@@ -2114,6 +2130,8 @@ function downloadCV() {
     initCarousel('projGrid','dotsProjetos');
     initCarousel('sitesGrid','dotsSites');
     initCarousel('ghGrid','dotsGH');
+    initCarousel('blogGrid','dotsBlog');
+    initCarousel('depGrid','dotsDep');
   }
   initAll();
   var rt;
