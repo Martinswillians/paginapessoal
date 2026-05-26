@@ -1641,10 +1641,22 @@ async function sendMsg(){
     });
     var data=await res.json();
     if(data.success){
+      // 1. Clear fields immediately
+      document.getElementById('cn').value='';
+      document.getElementById('ce').value='';
+      document.getElementById('cp').value='';
+      document.getElementById('ca').selectedIndex=0;
+      document.getElementById('cm').value='';
+
+      // 2. Show success state on button
+      btn.textContent='Enviado ✓';
+      btn.style.background='#14b8a6';
+
+      // 3. Show success banner
       var ok=document.getElementById('sent-ok');
-      ok.style.display='flex';
-      btn.textContent='Enviado ✓';btn.style.background='#14b8a6';
-      // WhatsApp via CallMeBot — ATIVO
+      if(ok) ok.style.display='flex';
+
+      // 4. WhatsApp via CallMeBot
       var waTxt=encodeURIComponent(
         '📩 *Novo contato no portfólio!*%0A'
         +'👤 *Nome:* '+n+'%0A'
@@ -1655,11 +1667,19 @@ async function sendMsg(){
       );
       fetch('https://api.callmebot.com/whatsapp.php?phone=556174037037&text='+waTxt+'&apikey=6972185')
         .catch(function(){});
-      document.getElementById('cn').value='';
-      document.getElementById('ce').value='';
-      document.getElementById('cp').value='';
-      document.getElementById('ca').selectedIndex=0;
-      document.getElementById('cm').value='';
+
+      // 5. Auto-reset after 4 seconds — user can send again
+      setTimeout(function(){
+        btn.textContent='Enviar mensagem →';
+        btn.style.background='';
+        btn.disabled=false;
+        if(ok){
+          ok.style.opacity='0';
+          ok.style.transition='opacity .5s';
+          setTimeout(function(){ ok.style.display='none'; ok.style.opacity='1'; ok.style.transition=''; }, 500);
+        }
+      }, 4000);
+
     } else {
       console.error('Web3Forms error:',data);
       btn.textContent='Erro — tente novamente';btn.disabled=false;btn.style.background='#ef4444';
