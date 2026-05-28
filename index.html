@@ -749,6 +749,97 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 }
 .share-toast.show{opacity:1}
 
+/* ── DESKTOP CAROUSEL ARROWS ────────────────────────── */
+.carousel-wrap{position:relative}
+.carousel-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:.5px solid var(--border);
+  display:none;align-items:center;justify-content:center;
+  cursor:pointer;z-index:10;color:var(--muted);
+  transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.carousel-arrow:hover{background:rgba(59,130,246,.1);color:var(--accent2);border-color:rgba(59,130,246,.3)}
+.carousel-arrow.prev{left:-18px}
+.carousel-arrow.next{right:-18px}
+.carousel-arrow svg{width:16px;height:16px}
+@media(min-width:769px){
+  .carousel-wrap:hover .carousel-arrow{display:flex}
+}
+
+/* ── STATUS BADGE DYNAMIC ────────────────────────────── */
+.status-badge-wrap{display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:.7rem;
+  background:var(--card);border:.5px solid var(--border);border-radius:5px;
+  padding:.4rem .9rem;cursor:pointer;transition:all .2s;
+  user-select:none;
+}
+.status-badge-wrap:hover{border-color:rgba(20,184,166,.4)}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.available{background:var(--teal);animation:pulse 2s infinite}
+.status-dot.hired{background:var(--gold)}
+.status-text{color:var(--accent2)}
+
+/* ── VISITOR COUNTER ─────────────────────────────────── */
+.visitor-counter{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:.65rem;color:rgba(107,122,150,.6);
+  margin-top:.8rem;
+}
+.visitor-counter svg{width:12px;height:12px;opacity:.5}
+#visitor-count{color:var(--accent2);font-weight:500}
+
+/* ── ACCESSIBILITY PANEL ─────────────────────────────── */
+.a11y-btn{
+  position:fixed;bottom:9rem;right:2rem;width:44px;height:44px;
+  border-radius:50%;background:var(--bg3);border:.5px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);z-index:500;opacity:0;pointer-events:none;
+  transform:translateY(12px);transition:opacity .3s,transform .3s,background .2s;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.a11y-btn:hover{background:rgba(59,130,246,.1);color:var(--accent2);border-color:rgba(59,130,246,.3)}
+.a11y-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.a11y-btn svg{width:18px;height:18px}
+.a11y-panel{
+  position:fixed;bottom:14rem;right:1.5rem;
+  background:var(--card);border:.5px solid var(--border);border-radius:10px;
+  padding:1rem;width:200px;z-index:500;
+  opacity:0;pointer-events:none;transform:translateY(8px) scale(.96);
+  transition:opacity .25s,transform .25s;box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.a11y-panel.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+.a11y-panel-title{font-family:var(--mono);font-size:.65rem;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.8rem}
+.a11y-row{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:.6rem}
+.a11y-label{font-family:var(--mono);font-size:.7rem;color:var(--text)}
+.a11y-controls{display:flex;gap:.4rem}
+.a11y-ctrl{background:var(--bg3);border:.5px solid var(--border);
+  border-radius:4px;padding:.2rem .6rem;font-family:var(--mono);font-size:.75rem;
+  color:var(--text);cursor:pointer;transition:all .2s}
+.a11y-ctrl:hover{background:rgba(59,130,246,.1);border-color:var(--accent2);color:var(--accent2)}
+
+/* ── SECTION HIGHLIGHT ON NAV CLICK ─────────────────── */
+@keyframes sectionPing{
+  0%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}
+  70%{box-shadow:0 0 0 16px rgba(59,130,246,0)}
+  100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}
+}
+.section-ping{animation:sectionPing .8s ease-out}
+
+/* ── PHOTO BLUR PRELOADER ─────────────────────────────── */
+.photo-frame img{filter:blur(8px);transition:filter .6s ease}
+.photo-frame img.loaded{filter:blur(0)}
+
+/* ── HIGH CONTRAST MODE ──────────────────────────────── */
+[data-contrast="high"]{
+  --bg:#000;--bg2:#111;--bg3:#1a1a1a;--card:#0d0d0d;
+  --text:#fff;--muted:#ccc;--border:rgba(255,255,255,.3);
+  --accent:#4d9fff;--accent2:#80bfff;--gold:#ffd700;--teal:#00ffcc;
+}
+[data-contrast="high"] *{text-shadow:0 0 0 !important}
+
 </style>
 <!-- Google Analytics GA4 -->
 <!-- Substitua G-N1T7YRMLEC pelo seu Measurement ID real no Google Analytics -->
@@ -779,6 +870,26 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
+<button class="a11y-btn" id="a11yBtn" onclick="toggleA11y()" aria-label="Acessibilidade">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+</button>
+<div class="a11y-panel" id="a11yPanel">
+  <p class="a11y-panel-title">Acessibilidade</p>
+  <div class="a11y-row">
+    <span class="a11y-label">Fonte</span>
+    <div class="a11y-controls">
+      <button class="a11y-ctrl" onclick="changeFontSize(-1)">A−</button>
+      <button class="a11y-ctrl" onclick="changeFontSize(0)">A</button>
+      <button class="a11y-ctrl" onclick="changeFontSize(1)">A+</button>
+    </div>
+  </div>
+  <div class="a11y-row">
+    <span class="a11y-label">Contraste</span>
+    <div class="a11y-controls">
+      <button class="a11y-ctrl" onclick="toggleHighContrast()">●●</button>
+    </div>
+  </div>
+</div>
 <button class="share-btn" id="shareBtn" onclick="shareProfile()" aria-label="Compartilhar perfil">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
@@ -794,15 +905,15 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 <nav>
   <span class="logo">[ <span>WAM</span>.dev ]</span>
   <div class="nav-links">
-    <a href="#sobre">sobre</a>
-    <a href="#projetos">projetos</a>
-    <a href="#blog">blog</a>
-    <a href="#depoimentos">depoimentos</a>
-    <a href="#github">github</a>
-    <a href="#sites">sites</a>
-    <a href="#experiencia">experiência</a>
-    <a href="#formacao">formação</a>
-    <a href="#contato">contato</a>
+    <a href="#sobre" onclick="highlightSection('sobre')">sobre</a>
+    <a href="#projetos" onclick="highlightSection('projetos')">projetos</a>
+    <a href="#blog" onclick="highlightSection('blog')">blog</a>
+    <a href="#depoimentos" onclick="highlightSection('depoimentos')">depoimentos</a>
+    <a href="#github" onclick="highlightSection('github')">github</a>
+    <a href="#sites" onclick="highlightSection('sites')">sites</a>
+    <a href="#experiencia" onclick="highlightSection('experiencia')">experiência</a>
+    <a href="#formacao" onclick="highlightSection('formacao')">formação</a>
+    <a href="#contato" onclick="highlightSection('contato')">contato</a>
   </div>
   <div style="display:flex;align-items:center;gap:.75rem">
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Alternar tema">
@@ -937,6 +1048,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <p class="sec-label">// 02. projetos</p>
   <h2 class="sec-title">O que construí</h2>
   <div class="carousel-wrap" id="cwProjetos">
+  <button class="carousel-arrow prev" aria-label="Anterior" onclick="arrowScroll(this,-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="carousel-arrow next" aria-label="Próximo" onclick="arrowScroll(this,1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
   <div class="proj-grid" id="projGrid">
 
     <div class="proj-card reveal">
@@ -1031,6 +1144,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <h2 class="sec-title">Blog</h2>
 
   <div class="carousel-wrap" id="cwBlog">
+  <button class="carousel-arrow prev" aria-label="Anterior" onclick="arrowScroll(this,-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="carousel-arrow next" aria-label="Próximo" onclick="arrowScroll(this,1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
   <div class="blog-grid stagger" id="blogGrid">
 
     <!-- Article 1 -->
@@ -1105,6 +1220,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <h2 class="sec-title">Depoimentos</h2>
 
   <div class="carousel-wrap" id="cwDep">
+  <button class="carousel-arrow prev" aria-label="Anterior" onclick="arrowScroll(this,-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="carousel-arrow next" aria-label="Próximo" onclick="arrowScroll(this,1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
   <div class="dep-grid stagger" id="depGrid">
 
     <div class="dep-card reveal">
@@ -1163,6 +1280,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   </a>
   <p id="gh-status" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:1rem;opacity:.6">Carregando dados do GitHub...</p>
   <div class="carousel-wrap" id="cwGH">
+  <button class="carousel-arrow prev" aria-label="Anterior" onclick="arrowScroll(this,-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="carousel-arrow next" aria-label="Próximo" onclick="arrowScroll(this,1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
   <div class="gh-grid stagger" id="ghGrid">
 
     <a class="gh-card" href="https://github.com/Martinswillians/HoraDeEstudar" target="_blank">
@@ -1285,6 +1404,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   <p class="sec-label">// 06. sites no ar</p>
   <h2 class="sec-title">Sites Desenvolvidos</h2>
   <div class="carousel-wrap" id="cwSites">
+  <button class="carousel-arrow prev" aria-label="Anterior" onclick="arrowScroll(this,-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button class="carousel-arrow next" aria-label="Próximo" onclick="arrowScroll(this,1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
   <div class="sites-grid stagger" id="sitesGrid">
 
     <div class="site-card">
@@ -2186,6 +2307,122 @@ function shareProfile(){
     }
   }
 }
+
+
+/* ── CAROUSEL ARROWS ─────────────────────────────────── */
+function arrowScroll(btn, dir){
+  var wrap = btn.closest('.carousel-wrap');
+  var grid = wrap.querySelector('[id$="Grid"],[class*="-grid"]');
+  if(!grid) return;
+  var card = grid.children[0];
+  if(!card) return;
+  var scrollAmt = card.offsetWidth + 20;
+  grid.scrollBy({left: dir * scrollAmt, behavior:'smooth'});
+}
+
+/* ── DYNAMIC STATUS BADGE ────────────────────────────── */
+(function(){
+  var badge = document.getElementById('statusBadge');
+  var dot   = document.getElementById('statusDot');
+  var text  = document.getElementById('statusText');
+  if(!badge) return;
+
+  var states = {
+    available: {text:'Disponível para oportunidades', dotClass:'available', color:'var(--teal)'},
+    hired:     {text:'Em novo desafio 🎉',             dotClass:'hired',     color:'var(--gold)'},
+  };
+
+  var current = localStorage.getItem('wam-status') || 'available';
+  function applyStatus(s){
+    dot.className = 'status-dot ' + states[s].dotClass;
+    text.textContent = states[s].text;
+    text.style.color = states[s].color;
+    localStorage.setItem('wam-status', s);
+    current = s;
+  }
+  applyStatus(current);
+  window.toggleStatus = function(){
+    applyStatus(current === 'available' ? 'hired' : 'available');
+  };
+})();
+
+/* ── VISITOR COUNTER via hits.sh ─────────────────────── */
+(function(){
+  var el = document.getElementById('visitor-count');
+  if(!el) return;
+  var url = 'https://hits.sh/martinswillians.github.io/paginapessoal.json';
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.total){
+        var n = parseInt(d.total, 10);
+        el.textContent = n.toLocaleString('pt-BR');
+      } else {
+        el.parentElement.style.display='none';
+      }
+    })
+    .catch(function(){ el.parentElement.style.display='none'; });
+})();
+
+/* ── ACCESSIBILITY ───────────────────────────────────── */
+(function(){
+  var btn = document.getElementById('a11yBtn');
+  if(!btn) return;
+  window.addEventListener('scroll',function(){
+    if(window.scrollY > 500) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
+
+  // Restore saved settings
+  var savedSize = localStorage.getItem('wam-fontsize');
+  if(savedSize) document.documentElement.style.fontSize = savedSize + 'px';
+  if(localStorage.getItem('wam-contrast') === '1') document.documentElement.setAttribute('data-contrast','high');
+})();
+
+window.toggleA11y = function(){
+  var panel = document.getElementById('a11yPanel');
+  if(panel) panel.classList.toggle('open');
+};
+
+window.changeFontSize = function(dir){
+  var base = parseInt(localStorage.getItem('wam-fontsize') || '16', 10);
+  var sizes = {'-1':14, '0':16, '1':18};
+  var next = dir === 0 ? 16 : Math.max(12, Math.min(22, base + dir * 2));
+  document.documentElement.style.fontSize = next + 'px';
+  localStorage.setItem('wam-fontsize', next);
+};
+
+window.toggleHighContrast = function(){
+  var on = document.documentElement.getAttribute('data-contrast') === 'high';
+  if(on){
+    document.documentElement.removeAttribute('data-contrast');
+    localStorage.removeItem('wam-contrast');
+  } else {
+    document.documentElement.setAttribute('data-contrast','high');
+    localStorage.setItem('wam-contrast','1');
+  }
+};
+
+/* ── SECTION HIGHLIGHT ON NAV CLICK ─────────────────── */
+window.highlightSection = function(id){
+  setTimeout(function(){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.classList.add('section-ping');
+    setTimeout(function(){ el.classList.remove('section-ping'); }, 900);
+  }, 400);
+};
+
+/* ── PHOTO BLUR PRELOADER ────────────────────────────── */
+(function(){
+  var img = document.querySelector('.photo-frame img');
+  if(!img) return;
+  if(img.complete){
+    img.classList.add('loaded');
+  } else {
+    img.addEventListener('load', function(){ img.classList.add('loaded'); });
+  }
+})();
 
 </script>
 
