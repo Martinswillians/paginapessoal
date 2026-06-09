@@ -138,7 +138,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content
 .sobre-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:3rem;align-items:start}
 .sobre-text{font-size:.97rem;color:#a0aec0;line-height:1.85;margin-bottom:1.5rem}
 .stats-row{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.5rem}
-.stat-box{background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:.9rem 1.3rem;min-width:110px}
+.stat-box{background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:.8rem 1.1rem;min-width:100px}
 .stat-num{font-family:var(--serif);font-size:1.9rem;color:var(--accent2);line-height:1}
 .stat-lbl{font-family:var(--mono);font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.3rem}
 
@@ -1273,9 +1273,22 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
         Anteriormente na Engesoftware, conduzi projetos como Analista de Requisitos Sênior e Scrum Master para clientes como Telebrás, Banco do Nordeste, TJCE e órgãos do governo federal. Minha abordagem une rigor técnico, comunicação clara com stakeholders e entrega contínua de valor.
       </p>
       <div class="stats-row">
-        <div class="stat-box"><div class="stat-num">15+</div><div class="stat-lbl">anos de atuação</div></div>
-        <div class="stat-box"><div class="stat-num">5+</div><div class="stat-lbl">projetos críticos</div></div>
-        <div class="stat-box"><div class="stat-num">100%</div><div class="stat-lbl">foco em resultado</div></div>
+        <div class="stat-box">
+          <div class="stat-num" data-target="17">17+</div>
+          <div class="stat-lbl">anos de experiência</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" data-target="8">8M+</div>
+          <div class="stat-lbl">beneficiários impactados</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" data-target="5">5</div>
+          <div class="stat-lbl">projetos gov. entregues</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" data-target="3">3</div>
+          <div class="stat-lbl">estados atendidos</div>
+        </div>
       </div>
     </div>
     <div class="skills-section">
@@ -2271,8 +2284,9 @@ function toggleTheme(){
     var target = parseInt(el.dataset.target, 10);
     if(isNaN(target)) return;
     var orig = el.textContent;
-    var suffix = orig.replace(/[\d]/g,'').trim();
-    var duration = 1600;
+    // Extract prefix (nothing) and suffix (everything after digits)
+    var suffix = orig.replace(/^\d+/, '').trim();   // e.g. "M+" or "+" or ""
+    var duration = 1800;
     var startTime = null;
     function step(ts){
       if(!startTime) startTime = ts;
@@ -2509,17 +2523,8 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeArti
 /* ── CV GENERATOR ─────────────────────────────────── */
 function downloadCV() {
   if(typeof trackCV!=="undefined") trackCV();
-  var btn = document.querySelector('.cv-btn');
-  var orig = btn.innerHTML;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Gerando PDF...';
-  btn.style.opacity = '0.7';
-
-  // Open print dialog pre-configured
-  setTimeout(function(){
-    btn.innerHTML = orig;
-    btn.style.opacity = '1';
-    window.print();
-  }, 400);
+  // Open the standalone CV page for clean PDF download
+  window.open('cv.html', '_blank');
 }
 
 
