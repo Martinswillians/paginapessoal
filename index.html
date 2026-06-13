@@ -31,6 +31,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2306090f'/><text x='50%25' y='54%25' font-size='16' font-family='monospace' font-weight='bold' fill='%2360a5fa' text-anchor='middle' dominant-baseline='middle'>W</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2306090f'/><text x='50%25' y='54%25' font-size='16' font-family='monospace' font-weight='bold' fill='%2360a5fa' text-anchor='middle' dominant-baseline='middle'>W</text></svg>">
 <link rel="canonical" href="https://martinswillians.github.io/paginapessoal/">
+<link rel="manifest" href="manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
@@ -1109,6 +1110,51 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 }
 [data-contrast="high"] *{text-shadow:0 0 0 !important}
 
+/* ── FORM VALIDATION ──────────────────────────────────── */
+.fg{position:relative}
+.fg input,.fg textarea,.fg select{
+  transition:border-color .2s,background .2s;
+}
+.fg input.valid,.fg textarea.valid{
+  border-color:rgba(20,184,166,.5) !important;
+  background:rgba(20,184,166,.04);
+}
+.fg input.invalid,.fg textarea.invalid{
+  border-color:rgba(239,68,68,.5) !important;
+  background:rgba(239,68,68,.04);
+}
+.fg-icon{
+  position:absolute;right:.7rem;top:2.15rem;
+  width:14px;height:14px;pointer-events:none;
+  opacity:0;transition:opacity .2s;
+}
+.fg-icon.show{opacity:1}
+.fg-icon.valid{color:var(--teal)}
+.fg-icon.invalid{color:#ef4444}
+.fg-hint{
+  font-family:var(--mono);font-size:.6rem;color:#ef4444;
+  margin-top:.25rem;display:none;
+}
+.fg-hint.show{display:block}
+
+/* ── LANGUAGE TOGGLE ───────────────────────────────────── */
+.lang-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+  background:var(--bg3);cursor:pointer !important;transition:all .25s;flex-shrink:0;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;
+  color:var(--muted);letter-spacing:.02em;
+}
+.lang-toggle:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(59,130,246,.08)}
+
+/* Hide elements based on language */
+[data-lang-en]{display:none}
+html[lang="en"] [data-lang-pt]{display:none}
+html[lang="en"] [data-lang-en]{display:inline}
+html[lang="en"] [data-lang-en].block-el{display:block}
+html[lang="en"] [data-lang-en].flex-el{display:flex}
+html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
+
 </style>
 <!-- Google Analytics GA4 -->
 <!-- Substitua G-N1T7YRMLEC pelo seu Measurement ID real no Google Analytics -->
@@ -1174,17 +1220,18 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 <nav>
   <span class="logo">[ <span>WAM</span>.dev ]</span>
   <div class="nav-links">
-    <a href="#sobre" onclick="highlightSection('sobre')">sobre</a>
-    <a href="#projetos" onclick="highlightSection('projetos')">projetos</a>
-    <a href="#blog" onclick="highlightSection('blog')">blog</a>
-    <a href="#depoimentos" onclick="highlightSection('depoimentos')">depoimentos</a>
-    <a href="#github" onclick="highlightSection('github')">github</a>
-    <a href="#sites" onclick="highlightSection('sites')">sites</a>
-    <a href="#experiencia" onclick="highlightSection('experiencia')">experiência</a>
-    <a href="#formacao" onclick="highlightSection('formacao')">formação</a>
-    <a href="#contato" onclick="highlightSection('contato')">contato</a>
+    <a href="#sobre" onclick="highlightSection('sobre')"><span data-lang-pt>sobre</span><span data-lang-en>about</span></a>
+    <a href="#projetos" onclick="highlightSection('projetos')"><span data-lang-pt>projetos</span><span data-lang-en>projects</span></a>
+    <a href="#blog" onclick="highlightSection('blog')"><span data-lang-pt>blog</span><span data-lang-en>blog</span></a>
+    <a href="#depoimentos" onclick="highlightSection('depoimentos')"><span data-lang-pt>depoimentos</span><span data-lang-en>testimonials</span></a>
+    <a href="#github" onclick="highlightSection('github')"><span data-lang-pt>github</span><span data-lang-en>github</span></a>
+    <a href="#sites" onclick="highlightSection('sites')"><span data-lang-pt>sites</span><span data-lang-en>sites</span></a>
+    <a href="#experiencia" onclick="highlightSection('experiencia')"><span data-lang-pt>experiência</span><span data-lang-en>experience</span></a>
+    <a href="#formacao" onclick="highlightSection('formacao')"><span data-lang-pt>formação</span><span data-lang-en>education</span></a>
+    <a href="#contato" onclick="highlightSection('contato')"><span data-lang-pt>contato</span><span data-lang-en>contact</span></a>
   </div>
   <div style="display:flex;align-items:center;gap:.75rem">
+    <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch language" title="Switch to English">PT</button>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Alternar tema">
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -1200,33 +1247,34 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 <!-- MOBILE DRAWER -->
 <div class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" onclick="toggleMenu()" aria-label="Fechar">✕</button>
-  <a href="#sobre"      onclick="toggleMenu()">sobre</a>
-  <a href="#projetos"   onclick="toggleMenu()">projetos</a>
-  <a href="#blog"       onclick="toggleMenu()">blog</a>
-  <a href="#depoimentos" onclick="toggleMenu()">depoimentos</a>
-  <a href="#github"     onclick="toggleMenu()">github</a>
-  <a href="#sites"      onclick="toggleMenu()">sites</a>
-  <a href="#experiencia" onclick="toggleMenu()">experiência</a>
-  <a href="#formacao"   onclick="toggleMenu()">formação</a>
-  <a href="#contato"    onclick="toggleMenu()">contato</a>
+  <a href="#sobre"      onclick="toggleMenu()"><span data-lang-pt>sobre</span><span data-lang-en>about</span></a>
+  <a href="#projetos"   onclick="toggleMenu()"><span data-lang-pt>projetos</span><span data-lang-en>projects</span></a>
+  <a href="#blog"       onclick="toggleMenu()"><span data-lang-pt>blog</span><span data-lang-en>blog</span></a>
+  <a href="#depoimentos" onclick="toggleMenu()"><span data-lang-pt>depoimentos</span><span data-lang-en>testimonials</span></a>
+  <a href="#github"     onclick="toggleMenu()"><span data-lang-pt>github</span><span data-lang-en>github</span></a>
+  <a href="#sites"      onclick="toggleMenu()"><span data-lang-pt>sites</span><span data-lang-en>sites</span></a>
+  <a href="#experiencia" onclick="toggleMenu()"><span data-lang-pt>experiência</span><span data-lang-en>experience</span></a>
+  <a href="#formacao"   onclick="toggleMenu()"><span data-lang-pt>formação</span><span data-lang-en>education</span></a>
+  <a href="#contato"    onclick="toggleMenu()"><span data-lang-pt>contato</span><span data-lang-en>contact</span></a>
 </div>
 
 <!-- HERO -->
 <section id="hero" style="max-width:1100px;margin:0 auto">
 <canvas id="hero-canvas"></canvas>
   <div>
-    <p class="hero-label">// analista de ti · brasília, df</p>
+    <p class="hero-label"><span data-lang-pt>// analista de ti · brasília, df</span><span data-lang-en>// it analyst · brasília, brazil</span></p>
     <h1 class="hero-name">Willians<br><em>Martins</em></h1>
     <p class="hero-role"><span id="tw-text"></span><span id="typewriter-cursor"></span></p>
     <p class="hero-bio">
-      Especialista em gestão operacional de ambientes de missão crítica, análise de requisitos e metodologias ágeis. Experiência em projetos governamentais e corporativos de alto impacto, garantindo alta disponibilidade, integridade de dados e alinhamento entre negócio e tecnologia.
+      <span data-lang-pt>Especialista em gestão operacional de ambientes de missão crítica, análise de requisitos e metodologias ágeis. Experiência em projetos governamentais e corporativos de alto impacto, garantindo alta disponibilidade, integridade de dados e alinhamento entre negócio e tecnologia.</span>
+      <span data-lang-en>Specialist in operational management of mission-critical environments, requirements analysis and agile methodologies. Experience in high-impact government and corporate projects, ensuring high availability, data integrity and business-technology alignment.</span>
     </p>
     <div class="hero-ctas">
-      <a href="#projetos" class="btn btn-blue">Ver projetos</a>
-      <a href="#contato" class="btn btn-ghost">Entre em contato</a>
+      <a href="#projetos" class="btn btn-blue"><span data-lang-pt>Ver projetos</span><span data-lang-en>View projects</span></a>
+      <a href="#contato" class="btn btn-ghost"><span data-lang-pt>Entre em contato</span><span data-lang-en>Get in touch</span></a>
       <button class="cv-btn" onclick="downloadCV()" title="Baixar Currículo em PDF">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Baixar CV
+        <span data-lang-pt>Baixar CV</span><span data-lang-en>Download CV</span>
       </button>
     </div>
     <div class="hero-contacts">
@@ -1262,8 +1310,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- SOBRE -->
 <div class="section" id="sobre">
-  <p class="sec-label">// 01. sobre mim</p>
-  <h2 class="sec-title">Quem sou</h2>
+  <p class="sec-label"><span data-lang-pt>// 01. sobre mim</span><span data-lang-en>// 01. about me</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Quem sou</span><span data-lang-en>Who I am</span></h2>
   <div class="sobre-grid stagger">
     <div>
       <p class="sobre-text">
@@ -1327,8 +1375,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- PROJETOS -->
 <div class="section" id="projetos">
-  <p class="sec-label">// 02. projetos</p>
-  <h2 class="sec-title">O que construí</h2>
+  <p class="sec-label"><span data-lang-pt>// 02. projetos</span><span data-lang-en>// 02. projects</span></p>
+  <h2 class="sec-title"><span data-lang-pt>O que construí</span><span data-lang-en>What I built</span></h2>
   <div class="carousel-wrap" id="cwProjetos">
   <div class="proj-grid" id="projGrid">
 
@@ -1428,8 +1476,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- BLOG -->
 <div class="section" id="blog">
-  <p class="sec-label">// 02b. artigos técnicos</p>
-  <h2 class="sec-title">Blog</h2>
+  <p class="sec-label"><span data-lang-pt>// 02b. artigos técnicos</span><span data-lang-en>// 02b. technical articles</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Blog</span><span data-lang-en>Blog</span></h2>
 
   <div class="carousel-wrap" id="cwBlog">
   <div class="blog-grid stagger" id="blogGrid">
@@ -1510,8 +1558,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- DEPOIMENTOS -->
 <div class="section" id="depoimentos">
-  <p class="sec-label">// 02c. prova social</p>
-  <h2 class="sec-title">Depoimentos</h2>
+  <p class="sec-label"><span data-lang-pt>// 02c. prova social</span><span data-lang-en>// 02c. social proof</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Depoimentos</span><span data-lang-en>Testimonials</span></h2>
 
   <div class="carousel-wrap" id="cwDep">
   <div class="dep-grid stagger" id="depGrid">
@@ -1572,8 +1620,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- GITHUB -->
 <div class="section" id="github">
-  <p class="sec-label">// 05. open source</p>
-  <h2 class="sec-title">GitHub</h2>
+  <p class="sec-label"><span data-lang-pt>// 05. open source</span><span data-lang-en>// 05. open source</span></p>
+  <h2 class="sec-title"><span data-lang-pt>GitHub</span><span data-lang-en>GitHub</span></h2>
   <a href="https://github.com/Martinswillians" target="_blank" class="gh-profile-btn">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
     github.com/Martinswillians →
@@ -1707,8 +1755,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- SITES DESENVOLVIDOS -->
 <div class="section" id="sites">
-  <p class="sec-label">// 06. sites no ar</p>
-  <h2 class="sec-title">Sites Desenvolvidos</h2>
+  <p class="sec-label"><span data-lang-pt>// 06. sites no ar</span><span data-lang-en>// 06. live sites</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Sites Desenvolvidos</span><span data-lang-en>Sites Built</span></h2>
   <div class="carousel-wrap" id="cwSites">
   <div class="sites-grid stagger" id="sitesGrid">
 
@@ -1877,8 +1925,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- EXPERIÊNCIA -->
 <div class="section" id="experiencia">
-  <p class="sec-label">// 07. experiência</p>
-  <h2 class="sec-title">Trajetória</h2>
+  <p class="sec-label"><span data-lang-pt>// 07. experiência</span><span data-lang-en>// 07. experience</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Trajetória</span><span data-lang-en>Career Path</span></h2>
   <div class="exp-list" id="expList">
     <div class="exp-item current reveal">
       <div class="exp-period">
@@ -1941,8 +1989,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- FORMAÇÃO -->
 <div class="section" id="formacao">
-  <p class="sec-label">// 08. formação</p>
-  <h2 class="sec-title">Educação</h2>
+  <p class="sec-label"><span data-lang-pt>// 08. formação</span><span data-lang-en>// 08. education</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Educação</span><span data-lang-en>Education</span></h2>
   <div class="form-grid">
     <div class="form-card">
       <div class="form-icon">// pós-graduação</div>
@@ -1961,8 +2009,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
     </div>
   </div>
 
-  <p class="sec-label" style="margin-top:3rem">// certificações &amp; cursos</p>
-  <h2 class="sec-title" style="font-size:1.6rem;margin-bottom:1.5rem">Certificações</h2>
+  <p class="sec-label" style="margin-top:3rem"><span data-lang-pt>// certificações &amp; cursos</span><span data-lang-en>// certifications &amp; courses</span></p>
+  <h2 class="sec-title" style="font-size:1.6rem;margin-bottom:1.5rem"><span data-lang-pt>Certificações</span><span data-lang-en>Certifications</span></h2>
   <div class="cert-grid">
     <div class="cert-item"><span class="cert-icon">◆</span><div><div class="cert-name">Scrum Fundamentals (SFC)</div><div class="cert-source">SCRUMstudy</div></div></div>
     <div class="cert-item"><span class="cert-icon">◆</span><div><div class="cert-name">Product Owner e Requisitos</div><div class="cert-source">Engesoftware · 2024</div></div></div>
@@ -1979,12 +2027,12 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 <!-- CONTATO -->
 <div class="section" id="contato">
-  <p class="sec-label">// 09. contato</p>
-  <h2 class="sec-title">Vamos conversar?</h2>
+  <p class="sec-label"><span data-lang-pt>// 09. contato</span><span data-lang-en>// 09. contact</span></p>
+  <h2 class="sec-title"><span data-lang-pt>Vamos conversar?</span><span data-lang-en>Let's talk?</span></h2>
   <div class="contato-wrap">
     <div class="contato-info">
-      <h3>Aberto a novas conexões</h3>
-      <p>Seja para uma oportunidade profissional, colaboração em projeto ou trocar ideias sobre tecnologia — fico feliz em conversar. Retorno rapidamente.</p>
+      <h3><span data-lang-pt>Aberto a novas conexões</span><span data-lang-en>Open to new connections</span></h3>
+      <p><span data-lang-pt>Seja para uma oportunidade profissional, colaboração em projeto ou trocar ideias sobre tecnologia — fico feliz em conversar. Retorno rapidamente.</span><span data-lang-en>Whether it is a professional opportunity, project collaboration, or just talking tech, I would love to hear from you. I respond quickly.</span></p>
       <div class="contato-links">
         <a href="mailto:williansmartins.arquienge@gmail.com" class="contato-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -1996,7 +2044,7 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
         </a>
         <a href="https://wa.me/5561974037037?text=Ol%C3%A1%20Willians%2C%20vim%20pelo%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar!" class="contato-link" target="_blank" style="color:#25d366;border-color:rgba(37,211,102,.25)">
           <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Chamar no WhatsApp
+          <span data-lang-pt>Chamar no WhatsApp</span><span data-lang-en>Message on WhatsApp</span>
         </a>
         <a href="https://www.linkedin.com/in/willians-martins-11157313/" class="contato-link" target="_blank" style="color:var(--teal);border-color:rgba(20,184,166,.2)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
@@ -2020,31 +2068,46 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
     <div class="form-box">
       <div class="fg-row">
-        <div class="fg"><label>Nome</label><input id="cn" type="text" placeholder="Seu nome"></div>
-        <div class="fg"><label>Email</label><input id="ce" type="email" placeholder="seu@email.com"></div>
+        <div class="fg">
+          <label><span data-lang-pt>Nome</span><span data-lang-en>Name</span></label>
+          <input id="cn" type="text" placeholder="Seu nome" data-ph-en="Your name" oninput="validateField('cn')">
+          <svg class="fg-icon valid" id="cn-valid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg class="fg-icon invalid" id="cn-invalid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="fg">
+          <label>Email</label>
+          <input id="ce" type="email" placeholder="seu@email.com" data-ph-en="you@email.com" oninput="validateField('ce')">
+          <svg class="fg-icon valid" id="ce-valid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg class="fg-icon invalid" id="ce-invalid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span class="fg-hint" id="ce-hint">E-mail inválido</span>
+        </div>
       </div>
-      <div class="fg"><label>Telefone <span style="color:var(--muted);font-size:.62rem">(opcional)</span></label><input id="cp" type="tel" placeholder="(XX) XXXXX-XXXX"></div>
+      <div class="fg"><label><span data-lang-pt>Telefone</span><span data-lang-en>Phone</span> <span style="color:var(--muted);font-size:.62rem"><span data-lang-pt>(opcional)</span><span data-lang-en>(optional)</span></span></label><input id="cp" type="tel" placeholder="(XX) XXXXX-XXXX" data-ph-en="(XX) XXXXX-XXXX"></div>
       <div class="fg">
-        <label>Assunto</label>
+        <label><span data-lang-pt>Assunto</span><span data-lang-en>Subject</span></label>
         <select id="ca">
-          <option value="" disabled selected>Selecione</option>
-          <option>Proposta de emprego</option>
-          <option>Projeto / Parceria</option>
-          <option>Freela / Consultoria</option>
-          <option>Outro assunto</option>
+          <option value="" disabled selected data-en="Select">Selecione</option>
+          <option data-en="Job opportunity">Proposta de emprego</option>
+          <option data-en="Project / Partnership">Projeto / Parceria</option>
+          <option data-en="Freelance / Consulting">Freela / Consultoria</option>
+          <option data-en="Other subject">Outro assunto</option>
         </select>
       </div>
-      <div class="fg"><label>Mensagem</label><textarea id="cm" placeholder="Olá Willians, gostaria de conversar sobre..."></textarea></div>
-      <button class="btn btn-blue btn-send" onclick="sendMsg()">Enviar mensagem →</button>
+      <div class="fg">
+        <label><span data-lang-pt>Mensagem</span><span data-lang-en>Message</span></label>
+        <textarea id="cm" placeholder="Olá Willians, gostaria de conversar sobre..." data-ph-en="Hi Willians, I would like to talk about..." oninput="validateField('cm')"></textarea>
+        <svg class="fg-icon valid" id="cm-valid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="top:1.7rem"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <button class="btn btn-blue btn-send" onclick="sendMsg()"><span data-lang-pt>Enviar mensagem →</span><span data-lang-en>Send message →</span></button>
       <div class="sent-ok" id="sent-ok" style="display:none;align-items:center;gap:.5rem">
-        <span style="color:var(--teal);font-size:1rem">✓</span> Mensagem enviada! Willians retornará em breve.
+        <span style="color:var(--teal);font-size:1rem">✓</span> <span data-lang-pt>Mensagem enviada! Willians retornará em breve.</span><span data-lang-en>Message sent! Willians will get back to you soon.</span>
       </div>
     </div>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 Willians Martins · Analista de TI · Brasília, DF</p>
+  <p>© 2026 Willians Martins · <span data-lang-pt>Analista de TI · Brasília, DF</span><span data-lang-en>IT Analyst · Brasília, Brazil</span></p>
 </footer>
 
 <script>
@@ -2726,6 +2789,96 @@ window.highlightSection = function(id){
   } else {
     img.addEventListener('load', function(){ img.classList.add('loaded'); });
   }
+})();
+
+
+/* ── PWA: SERVICE WORKER REGISTRATION ──────────────── */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+
+/* ── FORM VALIDATION (real-time) ───────────────────── */
+function validateField(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  var val = el.value.trim();
+  var validIcon = document.getElementById(id+'-valid');
+  var invalidIcon = document.getElementById(id+'-invalid');
+  var hint = document.getElementById(id+'-hint');
+
+  function setState(state){
+    el.classList.remove('valid','invalid');
+    if(validIcon) validIcon.classList.remove('show');
+    if(invalidIcon) invalidIcon.classList.remove('show');
+    if(hint) hint.classList.remove('show');
+
+    if(state === 'valid'){
+      el.classList.add('valid');
+      if(validIcon) validIcon.classList.add('show');
+    } else if(state === 'invalid'){
+      el.classList.add('invalid');
+      if(invalidIcon) invalidIcon.classList.add('show');
+      if(hint) hint.classList.add('show');
+    }
+    // 'empty' state = no classes, nothing shown
+  }
+
+  if(id === 'cn'){
+    if(val.length === 0) setState('empty');
+    else if(val.length >= 2) setState('valid');
+    else setState('invalid');
+  }
+  else if(id === 'ce'){
+    if(val.length === 0) setState('empty');
+    else {
+      var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setState(emailRe.test(val) ? 'valid' : 'invalid');
+    }
+  }
+  else if(id === 'cm'){
+    if(val.length === 0) setState('empty');
+    else if(val.length >= 5) setState('valid');
+    else setState('invalid');
+  }
+}
+
+/* ── PT / EN LANGUAGE TOGGLE ────────────────────────── */
+(function(){
+  var saved = localStorage.getItem('wam-lang') || 'pt';
+  applyLang(saved);
+
+  function applyLang(lang){
+    document.documentElement.setAttribute('lang', lang === 'en' ? 'en' : 'pt-BR');
+    var btn = document.getElementById('langToggle');
+    if(btn) btn.textContent = lang === 'en' ? 'EN' : 'PT';
+
+    // Swap placeholders
+    document.querySelectorAll('[data-ph-en]').forEach(function(el){
+      if(lang === 'en'){
+        if(!el.dataset.phPt) el.dataset.phPt = el.getAttribute('placeholder');
+        el.setAttribute('placeholder', el.dataset.phEn);
+      } else {
+        if(el.dataset.phPt) el.setAttribute('placeholder', el.dataset.phPt);
+      }
+    });
+
+    // Swap select option text
+    document.querySelectorAll('option[data-en]').forEach(function(opt){
+      if(!opt.dataset.pt) opt.dataset.pt = opt.textContent;
+      opt.textContent = lang === 'en' ? opt.dataset.en : opt.dataset.pt;
+    });
+
+    localStorage.setItem('wam-lang', lang);
+  }
+
+  window.toggleLang = function(){
+    var cur = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'pt';
+    applyLang(cur === 'en' ? 'pt' : 'en');
+  };
+
+  window.__applyLang = applyLang;
 })();
 
 </script>
