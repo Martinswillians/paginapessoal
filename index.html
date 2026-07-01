@@ -328,6 +328,15 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .form-grid{grid-template-columns:1fr}
   .fg-row{grid-template-columns:1fr}
   .gh-grid{grid-template-columns:1fr}
+  .fab-dock{
+    bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));
+    right:1.2rem;gap:.6rem;
+  }
+  .fab-dock .back-top,.fab-dock .share-btn,.fab-dock .a11y-btn{
+    width:40px;height:40px;
+  }
+  .a11y-panel{bottom:calc(9rem + env(safe-area-inset-bottom,0px));right:1.2rem;width:min(200px,calc(100vw - 2.4rem))}
+  .share-toast{bottom:calc(9rem + env(safe-area-inset-bottom,0px));right:1.2rem}
   .sites-grid{grid-template-columns:1fr}
 }
 /* ── DARK / LIGHT MODE ─────────────────────────────── */
@@ -448,21 +457,31 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 #hero{position:relative}
 #hero > *:not(#hero-canvas){position:relative;z-index:1}
 
+/* ── FAB DOCK (single fixed container for back-top/share/a11y) ── */
+.fab-dock{
+  position:fixed;bottom:2rem;right:2rem;z-index:500;
+  display:flex;flex-direction:column-reverse;gap:.8rem;
+  align-items:center;pointer-events:none;
+}
+.fab-dock > *{pointer-events:none}
+.fab-dock > .visible{pointer-events:all}
+
 /* ── BACK TO TOP ────────────────────────────────────── */
 .back-top{
-  position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;
+  position:static;width:44px;height:44px;
   border-radius:50%;background:var(--accent);border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  color:#fff;z-index:500;opacity:0;pointer-events:none;
+  color:#fff;opacity:0;
   transform:translateY(12px);
   transition:opacity .3s,transform .3s,background .2s;
   box-shadow:0 4px 20px rgba(59,130,246,.4);
 }
 .back-top:hover{background:var(--accent2);transform:translateY(-2px) !important}
-.back-top.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.back-top.visible{opacity:1;transform:translateY(0)}
 .back-top svg{width:18px;height:18px}
 
 /* ── SPLASH SCREEN ─────────────────────────────────── */
+
 #splash{
   position:fixed;inset:0;z-index:9999;
   background:var(--bg);display:flex;flex-direction:column;
@@ -955,7 +974,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
     display:flex !important;
     overflow-x:auto;
     overflow-y:hidden;
-    scroll-snap-type:x proximity;
+    scroll-snap-type:x mandatory;
+    scroll-padding-left:1.2rem;
     gap:1rem;
     padding:0.2rem 1.2rem 1.4rem;
     margin:0 -1.2rem;
@@ -969,12 +989,12 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .blog-grid::-webkit-scrollbar,
   .dep-grid::-webkit-scrollbar{display:none}
 
-  /* Card widths — show 80% + peek of next */
-  .proj-grid .proj-card{min-width:82vw;max-width:82vw;flex-shrink:0;scroll-snap-align:start}
-  .sites-grid .site-card{min-width:78vw;max-width:78vw;flex-shrink:0;scroll-snap-align:start}
-  .gh-grid .gh-card{min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start}
-  .blog-grid .blog-card{min-width:80vw;max-width:80vw;flex-shrink:0;scroll-snap-align:start}
-  .dep-grid .dep-card{min-width:82vw;max-width:82vw;flex-shrink:0;scroll-snap-align:start}
+  /* Card widths — exactly ONE card visible per screen, no peek */
+  .proj-grid .proj-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
+  .sites-grid .site-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
+  .gh-grid .gh-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
+  .blog-grid .blog-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
+  .dep-grid .dep-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
 
   /* Show dots */
   .carousel-nav{display:flex}
@@ -997,21 +1017,21 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 /* ── SHARE BUTTON ───────────────────────────────────── */
 .share-btn{
-  position:fixed;bottom:5.5rem;right:2rem;width:44px;height:44px;
+  position:static;width:44px;height:44px;
   border-radius:50%;background:var(--bg3);border:.5px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
-  color:var(--muted);z-index:500;opacity:0;pointer-events:none;
+  color:var(--muted);opacity:0;
   transform:translateY(12px);
   transition:opacity .3s,transform .3s,background .2s,color .2s,border-color .2s;
   box-shadow:0 4px 16px rgba(0,0,0,.3);
 }
 .share-btn:hover{background:rgba(59,130,246,.1);color:var(--accent2);border-color:rgba(59,130,246,.3)}
-.share-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.share-btn.visible{opacity:1;transform:translateY(0)}
 .share-btn svg{width:18px;height:18px}
 
 /* Share toast */
 .share-toast{
-  position:fixed;bottom:10rem;right:1.5rem;
+  position:fixed;bottom:11rem;right:1.5rem;
   font-family:var(--mono);font-size:.7rem;color:#fff;
   background:rgba(20,184,166,.9);padding:.5rem 1rem;
   border-radius:5px;opacity:0;pointer-events:none;
@@ -1066,18 +1086,18 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 
 /* ── ACCESSIBILITY PANEL ─────────────────────────────── */
 .a11y-btn{
-  position:fixed;bottom:9rem;right:2rem;width:44px;height:44px;
+  position:static;width:44px;height:44px;
   border-radius:50%;background:var(--bg3);border:.5px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
-  color:var(--muted);z-index:500;opacity:0;pointer-events:none;
+  color:var(--muted);opacity:0;
   transform:translateY(12px);transition:opacity .3s,transform .3s,background .2s;
   box-shadow:0 4px 16px rgba(0,0,0,.3);
 }
 .a11y-btn:hover{background:rgba(59,130,246,.1);color:var(--accent2);border-color:rgba(59,130,246,.3)}
-.a11y-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.a11y-btn.visible{opacity:1;transform:translateY(0)}
 .a11y-btn svg{width:18px;height:18px}
 .a11y-panel{
-  position:fixed;bottom:14rem;right:1.5rem;
+  position:fixed;bottom:11rem;right:1.5rem;
   background:var(--card);border:.5px solid var(--border);border-radius:10px;
   padding:1rem;width:200px;z-index:500;
   opacity:0;pointer-events:none;transform:translateY(8px) scale(.96);
@@ -1286,9 +1306,21 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
+<div class="fab-dock" id="fabDock">
 <button class="a11y-btn" id="a11yBtn" onclick="toggleA11y()" aria-label="Acessibilidade">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
 </button>
+<button class="share-btn" id="shareBtn" onclick="shareProfile()" aria-label="Compartilhar perfil">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+</button>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+</div>
 <div class="a11y-panel" id="a11yPanel">
   <p class="a11y-panel-title">Acessibilidade</p>
   <div class="a11y-row">
@@ -1306,17 +1338,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
     </div>
   </div>
 </div>
-<button class="share-btn" id="shareBtn" onclick="shareProfile()" aria-label="Compartilhar perfil">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-  </svg>
-</button>
 <div class="share-toast" id="shareToast">Link copiado! 📋</div>
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
-</button>
 
 <nav>
   <span class="logo">[ <span>WAM</span>.dev ]</span>
@@ -2574,14 +2596,28 @@ async function sendMsg(){
   draw();
 })();
 
-/* ── BACK TO TOP ────────────────────────────────────── */
+/* ── FAB DOCK visibility (single throttled scroll listener) ── */
 (function(){
-  var btn = document.getElementById('backTop');
-  if(!btn) return;
+  var backBtn = document.getElementById('backTop');
+  var shareBtn = document.getElementById('shareBtn');
+  var a11yBtn = document.getElementById('a11yBtn');
+  if(!backBtn) return;
+  var ticking = false;
+  function update(){
+    var show = window.scrollY > 500;
+    [backBtn, shareBtn, a11yBtn].forEach(function(b){
+      if(!b) return;
+      b.classList.toggle('visible', show);
+    });
+    ticking = false;
+  }
   window.addEventListener('scroll', function(){
-    if(window.scrollY > 500) btn.classList.add('visible');
-    else btn.classList.remove('visible');
-  });
+    if(!ticking){
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, {passive:true});
+  update();
 })();
 
 /* ── DARK/LIGHT THEME ─────────────────────────────── */
@@ -2903,16 +2939,6 @@ function downloadCV() {
   window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(initAll,200);});
 })();
 
-/* ── SHARE BUTTON visibility ──────────────────────── */
-(function(){
-  var btn=document.getElementById('shareBtn');
-  if(!btn) return;
-  window.addEventListener('scroll',function(){
-    if(window.scrollY>500) btn.classList.add('visible');
-    else btn.classList.remove('visible');
-  });
-})();
-
 /* ── SHARE PROFILE function ───────────────────────── */
 function shareProfile(){
   var url='https://martinswillians.github.io/paginapessoal/';
@@ -2991,10 +3017,6 @@ function arrowScroll(gridId, dir){
 (function(){
   var btn = document.getElementById('a11yBtn');
   if(!btn) return;
-  window.addEventListener('scroll',function(){
-    if(window.scrollY > 500) btn.classList.add('visible');
-    else btn.classList.remove('visible');
-  });
 
   // Restore saved settings
   var savedSize = localStorage.getItem('wam-fontsize');
