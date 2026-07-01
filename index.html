@@ -2377,7 +2377,8 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
         <svg class="fg-icon valid" id="cm-valid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="top:1.7rem"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <button class="btn btn-blue btn-send" onclick="sendMsg()"><span data-lang-pt>Enviar mensagem →</span><span data-lang-en>Send message →</span></button>
-      <div class="sent-ok" id="sent-ok" style="display:none;align-items:center;gap:.5rem">
+      <!-- sent-ok: always occupies space (visibility:hidden) to prevent layout shift on mobile -->
+      <div class="sent-ok" id="sent-ok" style="visibility:hidden;display:flex;align-items:center;gap:.5rem">
         <span style="color:var(--teal);font-size:1rem">✓</span> <span data-lang-pt>Mensagem enviada! Willians retornará em breve.</span><span data-lang-en>Message sent! Willians will get back to you soon.</span>
       </div>
     </div>
@@ -2396,16 +2397,29 @@ async function sendMsg(){
       a=document.getElementById('ca').value,
       m=document.getElementById('cm').value.trim();
   if(!n||!e||!m){alert('Por favor, preencha nome, e-mail e mensagem.');return;}
+
+  // Blur all fields immediately to dismiss virtual keyboard and prevent scroll jump
+  ['cn','ce','cp','ca','cm'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.blur();
+  });
+
   var btn=document.querySelector('.btn-send');
-  btn.textContent='Enviando...';btn.disabled=true;
+  var btnLabel = btn.querySelector('[data-lang-pt]') || btn;
+  btn.disabled=true;
+  if(btn.querySelector('[data-lang-pt]')){
+    btn.querySelector('[data-lang-pt]').textContent='Enviando...';
+    btn.querySelector('[data-lang-en]').textContent='Sending...';
+  } else { btn.textContent='Enviando...'; }
+
   try{
+    // 1. Web3Forms (email delivery)
     var res=await fetch('https://api.web3forms.com/submit',{
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({
         access_key:'f682c741-7e71-4068-989d-7584d266b275',
-        name:n,
-        email:e,
+        name:n, email:e,
         phone:p||'Não informado',
         subject:a||'Contato via site',
         message:m,
@@ -2414,53 +2428,80 @@ async function sendMsg(){
       })
     });
     var data=await res.json();
+
     if(data.success){
-      // 1. Clear fields immediately
+      // 2. Save to Firebase Firestore
+      try{
+        if(window._wamDB){
+          await window._wamDB.collection('contatos').add({
+            nome:n, email:e,
+            telefone:p||'',
+            assunto:a||'',
+            mensagem:m,
+            timestamp: new Date().toISOString(),
+            origem:'portfolio_wam.dev'
+          });
+        }
+      }catch(fbErr){ console.warn('Firestore save skipped:',fbErr); }
+
+      // 3. Clear fields (no layout change — sent-ok already occupies space)
       document.getElementById('cn').value='';
       document.getElementById('ce').value='';
       document.getElementById('cp').value='';
       document.getElementById('ca').selectedIndex=0;
       document.getElementById('cm').value='';
 
-      // 2. Show success state on button
-      btn.textContent='Enviado ✓';
+      // 4. Show success state
+      if(btn.querySelector('[data-lang-pt]')){
+        btn.querySelector('[data-lang-pt]').textContent='Enviado ✓';
+        btn.querySelector('[data-lang-en]').textContent='Sent ✓';
+      } else { btn.textContent='Enviado ✓'; }
       btn.style.background='#14b8a6';
 
-      // 3. Show success banner
+      // 5. Show success banner (visibility toggle — no layout shift)
       var ok=document.getElementById('sent-ok');
-      if(ok) ok.style.display='flex';
+      if(ok){ ok.style.visibility='visible'; ok.style.opacity='0'; ok.style.transition='opacity .4s'; requestAnimationFrame(function(){ ok.style.opacity='1'; }); }
 
-      // 4. WhatsApp via CallMeBot
+      // 6. WhatsApp via CallMeBot
       var waTxt=encodeURIComponent(
-        '📩 *Novo contato no portfólio!*%0A'
-        +'👤 *Nome:* '+n+'%0A'
-        +'📧 *Email:* '+e+'%0A'
-        +'📱 *Telefone:* '+(p||'Não informado')+'%0A'
-        +'📌 *Assunto:* '+a+'%0A'
+        '📩 *Novo contato no portfólio!*\n'
+        +'👤 *Nome:* '+n+'\n'
+        +'📧 *Email:* '+e+'\n'
+        +'📱 *Telefone:* '+(p||'Não informado')+'\n'
+        +'📌 *Assunto:* '+a+'\n'
         +'💬 *Mensagem:* '+m.slice(0,120)
       );
-      fetch('https://api.callmebot.com/whatsapp.php?phone=556174037037&text='+waTxt+'&apikey=6972185')
-        .catch(function(){});
+      fetch('https://api.callmebot.com/whatsapp.php?phone=556174037037&text='+waTxt+'&apikey=6972185').catch(function(){});
 
-      // 5. Auto-reset after 4 seconds — user can send again
+      // 7. Firebase Analytics event
+      if(window.gtag) gtag('event','form_submit',{event_category:'contact',event_label:a||'general'});
+
+      // 8. Auto-reset after 5s
       setTimeout(function(){
-        btn.textContent='Enviar mensagem →';
+        if(btn.querySelector('[data-lang-pt]')){
+          btn.querySelector('[data-lang-pt]').textContent='Enviar mensagem →';
+          btn.querySelector('[data-lang-en]').textContent='Send message →';
+        } else { btn.textContent='Enviar mensagem →'; }
         btn.style.background='';
         btn.disabled=false;
-        if(ok){
-          ok.style.opacity='0';
-          ok.style.transition='opacity .5s';
-          setTimeout(function(){ ok.style.display='none'; ok.style.opacity='1'; ok.style.transition=''; }, 500);
-        }
-      }, 4000);
+        if(ok){ ok.style.opacity='0'; setTimeout(function(){ ok.style.visibility='hidden'; ok.style.transition=''; ok.style.opacity='1'; },400); }
+      }, 5000);
 
     } else {
       console.error('Web3Forms error:',data);
-      btn.textContent='Erro — tente novamente';btn.disabled=false;btn.style.background='#ef4444';
+      if(btn.querySelector('[data-lang-pt]')){
+        btn.querySelector('[data-lang-pt]').textContent='Erro — tente novamente';
+        btn.querySelector('[data-lang-en]').textContent='Error — try again';
+      } else { btn.textContent='Erro — tente novamente'; }
+      btn.disabled=false; btn.style.background='#ef4444';
     }
   }catch(err){
     console.error('Fetch error:',err);
-    btn.textContent='Erro — tente novamente';btn.disabled=false;btn.style.background='#ef4444';
+    if(btn.querySelector('[data-lang-pt]')){
+      btn.querySelector('[data-lang-pt]').textContent='Erro — tente novamente';
+      btn.querySelector('[data-lang-en]').textContent='Error — try again';
+    } else { btn.textContent='Erro — tente novamente'; }
+    btn.disabled=false; btn.style.background='#ef4444';
   }
 }
 </script>
@@ -3329,5 +3370,30 @@ function closeCaseIfBg(e){
 
 </script>
 
+<!-- ── FIREBASE ─────────────────────────────────────── -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  var firebaseConfig = {
+    apiKey: "AIzaSyBDPyvVIMpSCZVcWwsyGzjoJ0MaVM2dFRo",
+    authDomain: "webpagewill.firebaseapp.com",
+    projectId: "webpagewill",
+    storageBucket: "webpagewill.firebasestorage.app",
+    messagingSenderId: "772251186585",
+    appId: "1:772251186585:web:48ae17e97e835094cb0f08",
+    measurementId: "G-LR61P6CKXJ"
+  };
+  try {
+    var app = firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    window._wamDB = firebase.firestore();
+    console.log('[WAM] Firebase inicializado ✓');
+  } catch(e) {
+    console.warn('[WAM] Firebase error:', e);
+  }
+})();
+</script>
 </body>
 </html>
