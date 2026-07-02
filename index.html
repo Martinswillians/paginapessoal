@@ -971,41 +971,42 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 }
 
 @media(max-width:768px){
-  /* ── All carousels ── */
+  /* ── JS-transform carousel: grids become clip containers ── */
   .proj-grid,
   .sites-grid,
   .gh-grid,
   .blog-grid,
   .dep-grid{
-    display:flex !important;
-    overflow-x:auto;
-    overflow-y:hidden;
-    scroll-snap-type:x mandatory;
-    scroll-padding-left:1.2rem;
-    gap:1rem;
-    padding:0.2rem 1.2rem 1.4rem;
-    margin:0 -1.2rem;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    overscroll-behavior-x:contain;
+    display:block !important;
+    overflow:hidden;
+    padding:0.2rem 0 1.4rem;
+    margin:0;
+    position:relative;
   }
-  .proj-grid::-webkit-scrollbar,
-  .sites-grid::-webkit-scrollbar,
-  .gh-grid::-webkit-scrollbar,
-  .blog-grid::-webkit-scrollbar,
-  .dep-grid::-webkit-scrollbar{display:none}
 
-  /* Card widths — exactly ONE card visible per screen, no peek */
-  .proj-grid .proj-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
-  .sites-grid .site-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
-  .gh-grid .gh-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
-  .blog-grid .blog-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
-  .dep-grid .dep-card{min-width:calc(100vw - 2.4rem);max-width:calc(100vw - 2.4rem);flex-shrink:0;scroll-snap-align:start;scroll-snap-stop:always}
+  /* Track: flex row, animates with translateX */
+  .carousel-track{
+    display:flex;
+    flex-direction:row;
+    transition:transform .38s cubic-bezier(.4,0,.2,1);
+    will-change:transform;
+    align-items:stretch;
+  }
+  /* Every card inside track = 100% viewport width */
+  .carousel-track > *{
+    min-width:100% !important;
+    max-width:100% !important;
+    flex-shrink:0;
+    box-sizing:border-box;
+  }
 
-  /* Show dots */
-  .carousel-nav{display:flex}
+  /* Arrow states at boundary */
+  .carousel-arrow[disabled]{opacity:.25;pointer-events:none}
+
+  /* Nav: hidden by default — only shown when carousel is actually active */
+  .carousel-nav{display:none}
+  .carousel-wrap.carousel-active .carousel-nav{display:flex}
   .carousel-dots-inner{display:flex}
-
 
   /* Contact responsive */
   .contato-wrap{grid-template-columns:1fr !important;gap:2rem}
@@ -2929,89 +2930,139 @@ function downloadCV() {
 }
 
 
-/* ── CAROUSELS dot indicators ─────────────────────── */
+/* ── CAROUSEL ENGINE (transform-based, no scroll-snap) ── */
+var _carousels = {};
+
 (function(){
-  function isMobile(){ return window.innerWidth<=768; }
+  function isMobile(){ return window.innerWidth <= 768; }
 
-  function initCarousel(gridId,dotsId){
-    var grid=document.getElementById(gridId);
-    var dotsWrap=document.getElementById(dotsId);
-    if(!grid||!dotsWrap) return;
-    var items=grid.children;
-    var count=items.length;
+  function buildCarousel(gridId, dotsId){
+    var grid = document.getElementById(gridId);
+    var dotsWrap = document.getElementById(dotsId);
+    if(!grid || !dotsWrap) return;
+
+    // Collect items BEFORE wrapping
+    var items = Array.from(grid.children);
+    var count = items.length;
     if(!count) return;
-    dotsWrap.innerHTML='';
 
-    var useCounter = count > 5; // numeric "2 / 10" counter for large carousels
+    // Create track and move all items into it
+    var track = document.createElement('div');
+    track.className = 'carousel-track';
+    items.forEach(function(item){ track.appendChild(item); });
+    grid.appendChild(track);
 
+    // Find arrow buttons in parent carousel-wrap
+    var wrap = grid.closest ? grid.closest('.carousel-wrap') : grid.parentNode;
+    var prevBtn = wrap ? wrap.querySelector('.carousel-arrow:first-of-type') : null;
+    var nextBtn = wrap ? wrap.querySelector('.carousel-arrow:last-of-type') : null;
+
+    var current = 0;
+    var useCounter = count > 5;
+
+    // Build nav indicator
+    dotsWrap.innerHTML = '';
+    var counter, dots = [];
     if(useCounter){
-      // Build a simple X / N counter — no dots, no layout shift
-      var counter = document.createElement('span');
-      counter.className='carousel-counter';
-      counter.textContent='1 / '+count;
+      counter = document.createElement('span');
+      counter.className = 'carousel-counter';
       dotsWrap.appendChild(counter);
-
-      var ticking=false;
-      grid.addEventListener('scroll',function(){
-        if(ticking) return;
-        ticking=true;
-        requestAnimationFrame(function(){
-          var center=grid.scrollLeft+grid.offsetWidth/2;
-          var closest=0,minDist=Infinity;
-          for(var j=0;j<items.length;j++){
-            var el=items[j];
-            var dist=Math.abs(el.offsetLeft+el.offsetWidth/2-center);
-            if(dist<minDist){minDist=dist;closest=j;}
-          }
-          counter.textContent=(closest+1)+' / '+count;
-          ticking=false;
-        });
-      });
     } else {
-      // Dots for small carousels (≤5 items)
-      for(var i=0;i<count;i++){
-        var d=document.createElement('button');
-        d.className='carousel-dot'+(i===0?' active':'');
-        d.setAttribute('aria-label','Item '+(i+1));
-        (function(idx){
-          d.onclick=function(){
-            items[idx].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-          };
-        })(i);
+      for(var i = 0; i < count; i++){
+        var d = document.createElement('button');
+        d.className = 'carousel-dot';
+        d.setAttribute('aria-label', 'Item ' + (i+1));
+        (function(idx){ d.onclick = function(){ goTo(idx); }; })(i);
         dotsWrap.appendChild(d);
+        dots.push(d);
       }
-      var dots=dotsWrap.querySelectorAll('.carousel-dot');
-      var ticking2=false;
-      grid.addEventListener('scroll',function(){
-        if(ticking2) return;
-        ticking2=true;
-        requestAnimationFrame(function(){
-          var center=grid.scrollLeft+grid.offsetWidth/2;
-          var closest=0,minDist=Infinity;
-          for(var j=0;j<items.length;j++){
-            var el=items[j];
-            var dist=Math.abs(el.offsetLeft+el.offsetWidth/2-center);
-            if(dist<minDist){minDist=dist;closest=j;}
-          }
-          dots.forEach(function(d,i){d.classList.toggle('active',i===closest);});
-          ticking2=false;
-        });
-      });
     }
+
+    function updateNav(){
+      if(useCounter){
+        counter.textContent = (current + 1) + ' / ' + count;
+      } else {
+        dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+      }
+      if(prevBtn){ prevBtn.disabled = (current === 0); }
+      if(nextBtn){ nextBtn.disabled = (current === count - 1); }
+    }
+
+    function goTo(idx){
+      idx = Math.max(0, Math.min(count - 1, idx));
+      current = idx;
+      track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+      updateNav();
+    }
+
+    // Touch swipe — horizontal only, no interference with vertical scroll
+    var tx = 0, ty = 0, swiping = false;
+    grid.addEventListener('touchstart', function(e){
+      tx = e.touches[0].clientX;
+      ty = e.touches[0].clientY;
+      swiping = false;
+    }, {passive: true});
+
+    grid.addEventListener('touchmove', function(e){
+      var dx = e.touches[0].clientX - tx;
+      var dy = e.touches[0].clientY - ty;
+      if(!swiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8){
+        swiping = true;
+      }
+      if(swiping) e.preventDefault(); // block vertical scroll only when swiping horizontally
+    }, {passive: false});
+
+    grid.addEventListener('touchend', function(e){
+      if(!swiping) return;
+      var dx = e.changedTouches[0].clientX - tx;
+      if(Math.abs(dx) > 48) goTo(current + (dx < 0 ? 1 : -1));
+      swiping = false;
+    }, {passive: true});
+
+    // Store reference for arrowScroll
+    _carousels[gridId] = { goTo: goTo, get: function(){ return current; }, count: count };
+
+    // Mark wrapper as active so CSS shows the nav arrows
+    if(wrap) wrap.classList.add('carousel-active');
+
+    goTo(0);
   }
 
   function initAll(){
-    if(!isMobile()) return;
-    initCarousel('projGrid','dotsProjetos');
-    initCarousel('sitesGrid','dotsSites');
-    initCarousel('ghGrid','dotsGH');
-    initCarousel('blogGrid','dotsBlog');
-    initCarousel('depGrid','dotsDep');
+    if(!isMobile()){
+      // Desktop: remove carousel-active from all wraps
+      document.querySelectorAll('.carousel-wrap.carousel-active').forEach(function(w){
+        w.classList.remove('carousel-active');
+      });
+      Object.keys(_carousels).forEach(function(id){ delete _carousels[id]; });
+      return;
+    }
+    // Reset previous state
+    Object.keys(_carousels).forEach(function(id){ delete _carousels[id]; });
+    document.querySelectorAll('.carousel-wrap.carousel-active').forEach(function(w){
+      w.classList.remove('carousel-active');
+    });
+    buildCarousel('projGrid',  'dotsProjetos');
+    buildCarousel('sitesGrid', 'dotsSites');
+    buildCarousel('ghGrid',    'dotsGH');
+    buildCarousel('blogGrid',  'dotsBlog');
+    buildCarousel('depGrid',   'dotsDep');
   }
+
   initAll();
   var rt;
-  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(initAll,200);});
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(initAll, 250);
+  });
 })();
+
+/* ── CAROUSEL ARROWS ────────────────────────────── */
+function arrowScroll(gridId, dir){
+  var c = _carousels[gridId];
+  if(!c) return;
+  c.goTo(c.get() + dir);
+}
 
 /* ── SHARE PROFILE function ───────────────────────── */
 function shareProfile(){
@@ -3030,22 +3081,6 @@ function shareProfile(){
       window.prompt('Copie o link:',url);
     }
   }
-}
-
-
-/* ── CAROUSEL ARROWS ─────────────────────────────────── */
-var _arrowLock = {};
-function arrowScroll(gridId, dir){
-  if(_arrowLock[gridId]) return;
-  var grid = document.getElementById(gridId);
-  if(!grid) return;
-  var card = grid.querySelector('.proj-card,.site-card,.gh-card,.blog-card,.dep-card');
-  if(!card) card = grid.children[0];
-  if(!card) return;
-  var scrollAmt = grid.clientWidth;
-  _arrowLock[gridId] = true;
-  grid.scrollBy({left: dir * scrollAmt, behavior:'smooth'});
-  setTimeout(function(){ _arrowLock[gridId] = false; }, 420);
 }
 
 /* ── DYNAMIC STATUS BADGE ────────────────────────────── */
