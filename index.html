@@ -462,6 +462,12 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   position:fixed;bottom:2rem;right:2rem;z-index:500;
   display:flex;flex-direction:column-reverse;gap:.8rem;
   align-items:center;
+  /* Force GPU composite layer — prevents iOS address-bar jump */
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  will-change:transform;
 }
 
 /* ── BACK TO TOP ────────────────────────────────────── */
@@ -975,7 +981,6 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .proj-grid,
   .sites-grid,
   .gh-grid,
-  .blog-grid,
   .dep-grid{
     display:block !important;
     overflow:hidden;
@@ -983,6 +988,53 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
     margin:0;
     position:relative;
   }
+  /* Blog stays as vertical grid on mobile */
+  .blog-grid{
+    display:grid !important;
+    grid-template-columns:1fr;
+    gap:1.2rem;
+  }
+
+  /* ── gh-card collapse on mobile ── */
+  .gh-grid .gh-card{
+    /* Cards are block (vertical), not part of carousel */
+    margin-bottom:.8rem;
+  }
+  /* Collapsed: hide meta, link-row and live-row by default */
+  .gh-grid .gh-card .gh-meta,
+  .gh-grid .gh-card .gh-link-row,
+  .gh-grid .gh-card .gh-live-row{
+    display:none;
+  }
+  /* Collapsed: clamp description to 2 lines */
+  .gh-grid .gh-card .gh-desc{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  /* Expanded state: show everything */
+  .gh-grid .gh-card.gh-expanded .gh-meta{display:flex}
+  .gh-grid .gh-card.gh-expanded .gh-link-row{display:flex}
+  .gh-grid .gh-card.gh-expanded .gh-live-row{display:flex}
+  .gh-grid .gh-card.gh-expanded .gh-desc{
+    display:block;
+    -webkit-line-clamp:unset;
+    overflow:visible;
+  }
+  /* Toggle button */
+  .gh-toggle-btn{
+    display:flex;align-items:center;gap:.35rem;
+    margin-top:.8rem;
+    font-family:var(--mono);font-size:.7rem;
+    color:var(--accent2);background:none;border:none;
+    cursor:pointer;padding:.3rem 0;
+    transition:color .2s;
+    text-decoration:none;
+  }
+  .gh-toggle-btn:hover{color:var(--teal)}
+  .gh-toggle-btn svg{width:12px;height:12px;transition:transform .25s}
+  .gh-card.gh-expanded .gh-toggle-btn svg{transform:rotate(180deg)}
 
   /* Track: flex row, animates with translateX */
   .carousel-track{
@@ -1006,6 +1058,8 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   /* Nav: hidden by default — only shown when carousel is actually active */
   .carousel-nav{display:none}
   .carousel-wrap.carousel-active .carousel-nav{display:flex}
+  /* Blog section never gets carousel-active, but hide nav explicitly for safety */
+  #cwBlog .carousel-nav{display:none !important}
   .carousel-dots-inner{display:flex}
 
   /* Contact responsive */
@@ -2643,27 +2697,37 @@ async function sendMsg(){
   draw();
 })();
 
-/* ── FAB DOCK visibility (single throttled scroll listener) ── */
+/* ── FAB DOCK visibility (desktop scroll-based; always visible on mobile) ── */
 (function(){
   var backBtn = document.getElementById('backTop');
   var shareBtn = document.getElementById('shareBtn');
   var a11yBtn = document.getElementById('a11yBtn');
   if(!backBtn) return;
-  var ticking = false;
+
+  function isMobile(){ return window.innerWidth <= 768; }
+
   function update(){
-    var show = window.scrollY > 500;
+    // On mobile: always show all 3 buttons (no scroll dependency = no movement)
+    var show = isMobile() ? true : (window.scrollY > 500);
     [backBtn, shareBtn, a11yBtn].forEach(function(b){
       if(!b) return;
       b.classList.toggle('visible', show);
     });
-    ticking = false;
   }
+
+  // Desktop: scroll listener
+  var ticking = false;
   window.addEventListener('scroll', function(){
+    if(isMobile()) return; // mobile handles via always-on
     if(!ticking){
-      requestAnimationFrame(update);
+      requestAnimationFrame(function(){ update(); ticking=false; });
       ticking = true;
     }
   }, {passive:true});
+
+  // Resize: re-evaluate (desktop↔mobile switch)
+  window.addEventListener('resize', update, {passive:true});
+
   update();
 })();
 
@@ -3045,7 +3109,8 @@ var _carousels = {};
     buildCarousel('projGrid',  'dotsProjetos');
     buildCarousel('sitesGrid', 'dotsSites');
     buildCarousel('ghGrid',    'dotsGH');
-    buildCarousel('blogGrid',  'dotsBlog');
+    // blog fica em grid vertical no mobile — sem carrossel
+    // buildCarousel('blogGrid',  'dotsBlog');
     buildCarousel('depGrid',   'dotsDep');
   }
 
@@ -3082,6 +3147,35 @@ function shareProfile(){
     }
   }
 }
+
+/* ── GH-CARD EXPAND/COLLAPSE (mobile only) ────────────── */
+(function(){
+  if(window.innerWidth > 768) return;
+
+  var grid = document.getElementById('ghGrid');
+  if(!grid) return;
+
+  Array.from(grid.querySelectorAll('.gh-card')).forEach(function(card){
+    // Create toggle button (inside the <a> card but with preventDefault)
+    var btn = document.createElement('button');
+    btn.className = 'gh-toggle-btn';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg><span data-lang-pt>Ver mais</span><span data-lang-en>See more</span>';
+    btn.setAttribute('aria-expanded', 'false');
+
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var expanded = card.classList.toggle('gh-expanded');
+      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      var ptLabel = btn.querySelector('[data-lang-pt]');
+      var enLabel = btn.querySelector('[data-lang-en]');
+      if(ptLabel) ptLabel.textContent = expanded ? 'Resumir' : 'Ver mais';
+      if(enLabel) enLabel.textContent = expanded ? 'Collapse' : 'See more';
+    });
+
+    card.appendChild(btn);
+  });
+})();
 
 /* ── DYNAMIC STATUS BADGE ────────────────────────────── */
 (function(){
