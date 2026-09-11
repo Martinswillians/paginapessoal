@@ -290,6 +290,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content
 .sent-ok{display:none;text-align:center;padding:1.2rem;font-family:var(--mono);font-size:.78rem;color:var(--teal);background:rgba(20,184,166,.07);border:.5px solid rgba(20,184,166,.2);border-radius:6px;margin-top:.8rem}
 
 footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);border-top:.5px solid var(--border)}
+.footer-actions{display:none} /* hidden on desktop — FAB handles it */
+@media(max-width:768px){
+  .footer-actions{
+    display:flex;justify-content:center;gap:1rem;
+    margin-top:1.2rem;padding-top:1rem;
+    border-top:.5px solid var(--border);
+  }
+  .footer-action-btn{
+    display:flex;flex-direction:column;align-items:center;gap:.3rem;
+    background:var(--card);border:.5px solid var(--border);
+    border-radius:10px;padding:.65rem 1.1rem;
+    font-family:var(--mono);font-size:.6rem;color:var(--muted);
+    cursor:pointer;transition:background .2s,color .2s,border-color .2s;
+    min-width:72px;
+  }
+  .footer-action-btn:hover,.footer-action-btn:active{
+    background:rgba(59,130,246,.1);color:var(--accent2);
+    border-color:rgba(59,130,246,.3);
+  }
+  .footer-action-btn svg{stroke:currentColor}
+}
 
 /* HAMBURGER */
 .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;cursor:pointer;padding:4px;border-radius:4px;background:transparent;border:none;z-index:300}
@@ -328,10 +349,7 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
   .form-grid{grid-template-columns:1fr}
   .fg-row{grid-template-columns:1fr}
   .gh-grid{grid-template-columns:1fr}
-  .fab-dock{
-    bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));
-    right:1.2rem;gap:.6rem;
-  }
+  .fab-dock{\n    bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));\n    right:1.2rem;gap:.6rem;\n    /* Hide on mobile — causes iOS viewport jump. Back-to-top is in footer. */\n    display:none;\n  }
   .fab-dock .back-top,.fab-dock .share-btn,.fab-dock .a11y-btn{
     width:40px;height:40px;
   }
@@ -2447,6 +2465,21 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 
 <footer>
   <p>© 2026 Willians Martins · <span data-lang-pt>Analista de TI · Brasília, DF</span><span data-lang-en>IT Analyst · Brasília, Brazil</span></p>
+  <!-- Mobile action bar (replaces floating buttons) -->
+  <div class="footer-actions">
+    <button class="footer-action-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+      <span data-lang-pt>Topo</span><span data-lang-en>Top</span>
+    </button>
+    <button class="footer-action-btn" onclick="shareProfile()" aria-label="Compartilhar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span data-lang-pt>Compartilhar</span><span data-lang-en>Share</span>
+    </button>
+    <button class="footer-action-btn" onclick="toggleA11y()" aria-label="Acessibilidade">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span data-lang-pt>Acesso</span><span data-lang-en>Access</span>
+    </button>
+  </div>
 </footer>
 
 <script>
@@ -3538,9 +3571,6 @@ function closeCaseIfBg(e){
 </script>
 
 <!-- ── FIREBASE ─────────────────────────────────────── -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
 (function(){
   var firebaseConfig = {
@@ -3552,14 +3582,31 @@ function closeCaseIfBg(e){
     appId: "1:772251186585:web:48ae17e97e835094cb0f08",
     measurementId: "G-LR61P6CKXJ"
   };
-  try {
-    var app = firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-    window._wamDB = firebase.firestore();
-    console.log('[WAM] Firebase inicializado ✓');
-  } catch(e) {
-    console.warn('[WAM] Firebase error:', e);
+
+  function loadScript(src, cb){
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = cb;
+    s.onerror = function(){ console.warn('[WAM] Firebase script failed:', src); };
+    document.head.appendChild(s);
   }
+
+  // Load app → analytics → firestore in sequence
+  loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js', function(){
+    loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js', function(){
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js', function(){
+        try{
+          if(typeof firebase === 'undefined') throw new Error('firebase not defined after load');
+          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          firebase.analytics();
+          window._wamDB = firebase.firestore();
+          console.log('[WAM] Firebase ✓');
+        } catch(e){
+          console.warn('[WAM] Firebase init error:', e.message);
+        }
+      });
+    });
+  });
 })();
 </script>
 </body>
