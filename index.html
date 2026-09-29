@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://martinswillians.github.io/paginapessoal/">
 <meta property="og:title" content="Willians Martins | Analista de TI · Brasília, DF">
 <meta property="og:description" content="Especialista em gestão operacional, análise de requisitos e metodologias ágeis. +17 anos de experiência em projetos governamentais e corporativos.">
-<meta property="og:image" content="https://martinswillians.github.io/paginapessoal/og-image.jpg">
+<meta property="og:image" content="https://martinswillians.github.io/paginapessoal/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
@@ -290,6 +290,99 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content
 .sent-ok{display:none;text-align:center;padding:1.2rem;font-family:var(--mono);font-size:.78rem;color:var(--teal);background:rgba(20,184,166,.07);border:.5px solid rgba(20,184,166,.2);border-radius:6px;margin-top:.8rem}
 
 footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);border-top:.5px solid var(--border)}
+
+/* ── ADMIN BAR ─────────────────────────────────── */
+.admin-bar{
+  position:fixed;top:0;left:0;width:100%;z-index:9999;
+  background:linear-gradient(90deg,#1e293b,#0f172a);
+  border-bottom:2px solid var(--teal);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem 1.5rem;gap:1rem;
+  font-family:var(--mono);font-size:.72rem;
+}
+.admin-bar-left{display:flex;align-items:center;gap:.6rem;color:var(--teal)}
+.admin-bar-left svg{width:14px;height:14px}
+.admin-bar-btns{display:flex;gap:.5rem}
+.admin-btn{
+  background:rgba(20,184,166,.15);border:.5px solid rgba(20,184,166,.4);
+  color:var(--teal);border-radius:5px;padding:.3rem .8rem;
+  font-family:var(--mono);font-size:.68rem;cursor:pointer;
+  transition:background .2s;
+}
+.admin-btn:hover{background:rgba(20,184,166,.3)}
+.admin-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#f87171}
+.admin-btn.danger:hover{background:rgba(239,68,68,.2)}
+.admin-bar-push{margin-top:48px} /* compensate fixed bar */
+
+/* ── ADMIN LOGIN MODAL ─────────────────────────── */
+.admin-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.admin-modal-overlay.open{opacity:1;pointer-events:all}
+.admin-modal-box{
+  background:var(--card);border:.5px solid var(--border);border-radius:14px;
+  padding:2rem;width:min(420px,90vw);position:relative;
+  transform:translateY(20px);transition:transform .25s;
+}
+.admin-modal-overlay.open .admin-modal-box{transform:translateY(0)}
+.admin-modal-title{font-size:1rem;font-weight:700;margin-bottom:1.2rem;color:var(--text)}
+.admin-modal-close{
+  position:absolute;top:1rem;right:1rem;background:none;border:none;
+  color:var(--muted);cursor:pointer;font-size:1.1rem;
+}
+.admin-field{margin-bottom:.9rem}
+.admin-field label{display:block;font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem}
+.admin-field input,.admin-field textarea,.admin-field select{
+  width:100%;background:var(--bg2);border:.5px solid var(--border);
+  border-radius:7px;padding:.6rem .8rem;color:var(--text);
+  font-family:inherit;font-size:.82rem;outline:none;
+  transition:border-color .2s;
+}
+.admin-field input:focus,.admin-field textarea:focus{border-color:var(--teal)}
+.admin-field textarea{resize:vertical;min-height:120px;font-size:.78rem;line-height:1.6}
+.admin-error{color:#f87171;font-size:.7rem;margin-top:.5rem;font-family:var(--mono)}
+
+/* ── ARTICLE EDITOR EXTRA ─────────────────────── */
+#editorModal .admin-modal-box{width:min(760px,95vw)}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem}
+.editor-tb-btn{
+  background:var(--bg3);border:.5px solid var(--border);border-radius:4px;
+  padding:.2rem .55rem;font-size:.7rem;color:var(--muted);cursor:pointer;
+  font-family:var(--mono);transition:background .15s,color .15s;
+}
+.editor-tb-btn:hover{background:rgba(20,184,166,.15);color:var(--teal)}
+.editor-preview{
+  background:var(--bg2);border:.5px solid var(--border);border-radius:7px;
+  padding:.8rem 1rem;min-height:80px;max-height:300px;overflow-y:auto;
+  font-size:.8rem;line-height:1.7;color:var(--muted);margin-top:.5rem;
+}
+.editor-preview h3{font-size:.9rem;font-weight:700;margin:.7rem 0 .3rem;color:var(--text)}
+.editor-preview p{margin-bottom:.5rem}
+.editor-preview ul{padding-left:1.2rem;margin-bottom:.5rem}
+.editor-preview code{background:var(--bg3);padding:.1rem .3rem;border-radius:3px;font-family:var(--mono);font-size:.75rem}
+.editor-tabs{display:flex;gap:.4rem;margin-bottom:.5rem}
+.editor-tab{background:none;border:.5px solid var(--border);border-radius:5px;padding:.25rem .7rem;font-family:var(--mono);font-size:.65rem;color:var(--muted);cursor:pointer}
+.editor-tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* ── DYNAMIC BLOG CARDS ───────────────────────── */
+.blog-card .blog-share-btn{
+  display:none;align-items:center;gap:.35rem;
+  font-family:var(--mono);font-size:.64rem;color:var(--muted);
+  background:none;border:none;cursor:pointer;padding:.2rem 0;
+  transition:color .2s;
+}
+.blog-card:hover .blog-share-btn,.blog-card .blog-share-btn.show{display:flex}
+.blog-card .blog-share-btn:hover{color:var(--teal)}
+.blog-card.is-dynamic .blog-banner-icon{font-size:1.6rem}
+/* New article badge */
+.blog-new-badge{
+  background:rgba(20,184,166,.15);border:.5px solid rgba(20,184,166,.3);
+  color:var(--teal);font-family:var(--mono);font-size:.58rem;
+  padding:.1rem .5rem;border-radius:20px;letter-spacing:.06em;
+  font-weight:700;
+}
 .footer-actions{display:none} /* hidden on desktop — FAB handles it */
 @media(max-width:768px){
   .footer-actions{
@@ -1675,6 +1768,9 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
   <div class="carousel-wrap" id="cwBlog">
   <div class="blog-grid stagger" id="blogGrid">
 
+    <!-- Dynamic articles from Firestore load here -->
+    <div id="dynamicArticles" style="display:contents"></div>
+
     <!-- Article 1 -->
     <div class="blog-card reveal" onclick="openArticle('art1')">
       <div class="blog-banner" style="background:linear-gradient(135deg,#0a1628 0%,#1a3050 100%)">
@@ -2839,9 +2935,17 @@ function toggleTheme(){
   var status = document.getElementById('gh-status');
   Promise.all(repos.map(function(r){
     return fetch('https://api.github.com/repos/Martinswillians/'+r)
-      .then(function(res){ return res.json(); })
+      .then(function(res){
+        if(!res.ok) throw new Error(res.status);
+        return res.json();
+      })
       .then(function(d){ renderLive(r,d); return d; })
-      .catch(function(){ return null; });
+      .catch(function(){
+        // Fallback: show simple link instead of "carregando..." forever
+        var el = document.getElementById('gh-live-'+r);
+        if(el) el.innerHTML = '<a href="https://github.com/Martinswillians/'+r+'" target="_blank" style="font-family:var(--mono);font-size:.62rem;color:var(--teal);text-decoration:none">Ver no GitHub →</a>';
+        return null;
+      });
   })).then(function(){
     if(status) status.style.display='none';
   }).catch(function(){
@@ -3566,6 +3670,107 @@ function closeCaseIfBg(e){
 
 </script>
 
+<!-- ── ADMIN BAR (shows only when logged in) ─── -->
+<div class="admin-bar" id="adminBar" style="display:none">
+  <div class="admin-bar-left">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    Admin Mode · <span id="adminEmail" style="color:var(--muted)"></span>
+  </div>
+  <div class="admin-bar-btns">
+    <button class="admin-btn" onclick="openEditor()">✏️ Novo Artigo</button>
+    <button class="admin-btn danger" onclick="doLogout()">Sair</button>
+  </div>
+</div>
+
+<!-- ── ADMIN LOGIN MODAL ─── -->
+<div class="admin-modal-overlay" id="loginModal">
+  <div class="admin-modal-box">
+    <button class="admin-modal-close" onclick="closeLoginModal()">✕</button>
+    <p class="admin-modal-title">🔒 Acesso Admin</p>
+    <div class="admin-field">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" placeholder="seu@email.com">
+    </div>
+    <div class="admin-field">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="admin-error" id="loginError"></div>
+    <button class="admin-btn" style="width:100%;margin-top:.5rem;justify-content:center" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ── ARTICLE EDITOR MODAL ─── -->
+<div class="admin-modal-overlay" id="editorModal">
+  <div class="admin-modal-box">
+    <button class="admin-modal-close" onclick="closeEditor()">✕</button>
+    <p class="admin-modal-title" id="editorTitle">✏️ Novo Artigo</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+      <div class="admin-field">
+        <label>Título (PT)</label>
+        <input type="text" id="artTitle" placeholder="Título do artigo">
+      </div>
+      <div class="admin-field">
+        <label>Título (EN)</label>
+        <input type="text" id="artTitleEn" placeholder="Article title">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem">
+      <div class="admin-field">
+        <label>Categoria</label>
+        <select id="artCategory">
+          <option>Metodologia</option>
+          <option>Infraestrutura</option>
+          <option>Análise</option>
+          <option>Gestão</option>
+          <option>Tecnologia</option>
+          <option>Carreira</option>
+        </select>
+      </div>
+      <div class="admin-field">
+        <label>Data</label>
+        <input type="text" id="artDate" placeholder="Jul 2026">
+      </div>
+      <div class="admin-field">
+        <label>Tempo de leitura</label>
+        <input type="text" id="artReadTime" placeholder="5 min">
+      </div>
+    </div>
+
+    <div class="admin-field">
+      <label>Resumo (PT)</label>
+      <input type="text" id="artDesc" placeholder="Breve descrição do artigo...">
+    </div>
+    <div class="admin-field">
+      <label>Resumo (EN)</label>
+      <input type="text" id="artDescEn" placeholder="Brief article description...">
+    </div>
+
+    <div class="admin-field">
+      <label>Conteúdo (HTML)</label>
+      <div class="editor-toolbar">
+        <button class="editor-tb-btn" onclick="insertTag('h3')">H3</button>
+        <button class="editor-tb-btn" onclick="insertTag('p')">§ P</button>
+        <button class="editor-tb-btn" onclick="insertTag('strong')"><b>B</b></button>
+        <button class="editor-tb-btn" onclick="insertTag('em')"><i>I</i></button>
+        <button class="editor-tb-btn" onclick="insertTag('code')">{ }</button>
+        <button class="editor-tb-btn" onclick="insertList()">• Lista</button>
+        <button class="editor-tb-btn" onclick="togglePreview()">👁 Preview</button>
+      </div>
+      <textarea id="artBody" rows="10" placeholder="<h3>Título da seção</h3>&#10;<p>Conteúdo do artigo...</p>"></textarea>
+      <div class="editor-preview" id="artPreview" style="display:none"></div>
+    </div>
+
+    <div class="admin-error" id="editorError"></div>
+    <div style="display:flex;gap:.6rem;margin-top:.5rem">
+      <button class="admin-btn" style="flex:1" onclick="publishArticle(false)">💾 Salvar Rascunho</button>
+      <button class="admin-btn" style="flex:1;background:rgba(20,184,166,.2);border-color:rgba(20,184,166,.5);color:var(--teal)" onclick="publishArticle(true)">🚀 Publicar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── FIREBASE ─────────────────────────────────────── -->
 <script>
 (function(){
@@ -3581,28 +3786,340 @@ function closeCaseIfBg(e){
 
   function loadScript(src, cb){
     var s = document.createElement('script');
-    s.src = src;
-    s.onload = cb;
-    s.onerror = function(){ console.warn('[WAM] Firebase script failed:', src); };
+    s.src = src; s.onload = cb;
+    s.onerror = function(){ console.warn('[WAM] Script failed:', src); if(cb) cb(); };
     document.head.appendChild(s);
   }
 
-  // Load app → analytics → firestore in sequence
-  loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js', function(){
-    loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js', function(){
-      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js', function(){
-        try{
-          if(typeof firebase === 'undefined') throw new Error('firebase not defined after load');
-          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-          firebase.analytics();
-          window._wamDB = firebase.firestore();
-          console.log('[WAM] Firebase ✓');
-        } catch(e){
-          console.warn('[WAM] Firebase init error:', e.message);
-        }
+  var base = 'https://www.gstatic.com/firebasejs/10.12.0/';
+  loadScript(base+'firebase-app-compat.js', function(){
+    loadScript(base+'firebase-analytics-compat.js', function(){
+      loadScript(base+'firebase-auth-compat.js', function(){
+        loadScript(base+'firebase-firestore-compat.js', function(){
+          try{
+            if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+            window._wamDB  = firebase.firestore();
+            window._wamAuth = firebase.auth();
+            console.log('[WAM] Firebase ✓');
+            initAuthListener();
+            loadFirestoreArticles();
+          } catch(e){ console.warn('[WAM] Firebase init error:', e.message); }
+        });
       });
     });
   });
+})();
+
+/* ── AUTH LISTENER ────────────────────────────────── */
+var ADMIN_EMAIL = 'williansmartins.arquienge@gmail.com';
+var _editingId = null;
+
+function initAuthListener(){
+  if(!window._wamAuth) return;
+  window._wamAuth.onAuthStateChanged(function(user){
+    var bar = document.getElementById('adminBar');
+    var emailEl = document.getElementById('adminEmail');
+    if(user && user.email === ADMIN_EMAIL){
+      if(bar){ bar.style.display='flex'; document.body.style.paddingTop='48px'; }
+      if(emailEl) emailEl.textContent = user.email;
+    } else {
+      if(bar) bar.style.display='none';
+      document.body.style.paddingTop='';
+    }
+  });
+}
+
+/* ── ADMIN LOGIN / LOGOUT ─────────────────────────── */
+// Secret trigger: click WAM.dev logo 5x within 3s
+(function(){
+  var count=0, timer;
+  var logo = document.querySelector('.nav-logo');
+  if(!logo) return;
+  logo.addEventListener('click', function(e){
+    count++;
+    clearTimeout(timer);
+    if(count>=5){
+      count=0;
+      openLoginModal();
+    } else {
+      timer = setTimeout(function(){ count=0; }, 3000);
+    }
+  });
+})();
+
+function openLoginModal(){
+  var m = document.getElementById('loginModal');
+  if(m) m.classList.add('open');
+  setTimeout(function(){ var f=document.getElementById('loginEmail'); if(f) f.focus(); }, 200);
+}
+function closeLoginModal(){
+  var m = document.getElementById('loginModal');
+  if(m){ m.classList.remove('open'); document.getElementById('loginError').textContent=''; }
+}
+function doLogin(){
+  if(!window._wamAuth){ alert('Firebase ainda carregando, aguarde...'); return; }
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass  = document.getElementById('loginPass').value;
+  var errEl = document.getElementById('loginError');
+  errEl.textContent = 'Entrando...';
+  window._wamAuth.signInWithEmailAndPassword(email, pass)
+    .then(function(){ closeLoginModal(); })
+    .catch(function(e){
+      errEl.textContent = e.code === 'auth/wrong-password' ? 'Senha incorreta.' :
+                          e.code === 'auth/user-not-found' ? 'Usuário não encontrado.' :
+                          e.code === 'auth/invalid-email' ? 'E-mail inválido.' : 'Erro: '+e.message;
+    });
+}
+function doLogout(){
+  if(window._wamAuth) window._wamAuth.signOut();
+}
+
+/* ── ARTICLE EDITOR ───────────────────────────────── */
+function openEditor(id){
+  _editingId = id || null;
+  var m = document.getElementById('editorModal');
+  var t = document.getElementById('editorTitle');
+  if(!m) return;
+  if(id){
+    // Load existing article for editing
+    t.textContent = '✏️ Editar Artigo';
+    if(window._wamDB){
+      window._wamDB.collection('artigos').doc(id).get().then(function(doc){
+        if(!doc.exists) return;
+        var d = doc.data();
+        document.getElementById('artTitle').value     = d.title||'';
+        document.getElementById('artTitleEn').value   = d.titleEn||'';
+        document.getElementById('artCategory').value  = d.category||'Metodologia';
+        document.getElementById('artDate').value      = d.date||'';
+        document.getElementById('artReadTime').value  = d.readTime||'';
+        document.getElementById('artDesc').value      = d.desc||'';
+        document.getElementById('artDescEn').value    = d.descEn||'';
+        document.getElementById('artBody').value      = d.body||'';
+        document.getElementById('artPreview').style.display='none';
+      });
+    }
+  } else {
+    t.textContent = '✏️ Novo Artigo';
+    ['artTitle','artTitleEn','artDesc','artDescEn','artBody','artDate','artReadTime'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('artDate').value = new Date().toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.','');
+    document.getElementById('artPreview').style.display='none';
+  }
+  m.classList.add('open');
+}
+function closeEditor(){
+  var m = document.getElementById('editorModal');
+  if(m) m.classList.remove('open');
+  _editingId = null;
+}
+
+function insertTag(tag){
+  var ta = document.getElementById('artBody');
+  var start=ta.selectionStart, end=ta.selectionEnd;
+  var sel = ta.value.substring(start,end) || 'texto';
+  var ins = '<'+tag+'>'+sel+'</'+tag+'>';
+  ta.value = ta.value.substring(0,start)+ins+ta.value.substring(end);
+  ta.focus();
+}
+function insertList(){
+  var ta = document.getElementById('artBody');
+  var ins = '\n<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n  <li>Item 3</li>\n</ul>\n';
+  ta.value += ins; ta.focus();
+}
+function togglePreview(){
+  var ta = document.getElementById('artBody');
+  var pv = document.getElementById('artPreview');
+  if(pv.style.display==='none'){
+    pv.innerHTML = ta.value || '<em>Nada para pré-visualizar</em>';
+    pv.style.display='block'; ta.style.display='none';
+  } else {
+    pv.style.display='none'; ta.style.display='block'; ta.focus();
+  }
+}
+
+function publishArticle(published){
+  if(!window._wamDB){ alert('Firebase ainda carregando.'); return; }
+  var user = window._wamAuth ? window._wamAuth.currentUser : null;
+  if(!user){ alert('Faça login primeiro.'); return; }
+
+  var title    = document.getElementById('artTitle').value.trim();
+  var titleEn  = document.getElementById('artTitleEn').value.trim();
+  var category = document.getElementById('artCategory').value;
+  var date     = document.getElementById('artDate').value.trim();
+  var readTime = document.getElementById('artReadTime').value.trim();
+  var desc     = document.getElementById('artDesc').value.trim();
+  var descEn   = document.getElementById('artDescEn').value.trim();
+  var body     = document.getElementById('artBody').value.trim();
+  var errEl    = document.getElementById('editorError');
+
+  if(!title || !body){ errEl.textContent = 'Título e conteúdo são obrigatórios.'; return; }
+  errEl.textContent = 'Salvando...';
+
+  var data = {
+    title:title, titleEn:titleEn||title,
+    category:category, date:date, readTime:readTime,
+    desc:desc, descEn:descEn||desc, body:body,
+    published:published, author:user.email,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdAt: _editingId ? firebase.firestore.FieldValue.serverTimestamp() : firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  var promise = _editingId
+    ? window._wamDB.collection('artigos').doc(_editingId).update(data)
+    : window._wamDB.collection('artigos').add(data);
+
+  promise.then(function(){
+    errEl.textContent = '';
+    closeEditor();
+    loadFirestoreArticles();
+    alert(published ? '✅ Artigo publicado!' : '💾 Rascunho salvo!');
+  }).catch(function(e){
+    errEl.textContent = 'Erro: '+e.message;
+  });
+}
+
+/* ── LOAD ARTICLES FROM FIRESTORE ─────────────────── */
+var _categoryColors = {
+  'Metodologia': {bg:'rgba(20,184,166,.1)',color:'var(--teal)',border:'rgba(20,184,166,.2)',icon:'🏃'},
+  'Infraestrutura': {bg:'rgba(59,130,246,.12)',color:'#60a5fa',border:'rgba(59,130,246,.2)',icon:'⚙️'},
+  'Análise': {bg:'rgba(245,158,11,.08)',color:'var(--gold)',border:'rgba(245,158,11,.2)',icon:'📋'},
+  'Gestão': {bg:'rgba(139,92,246,.1)',color:'#a78bfa',border:'rgba(139,92,246,.2)',icon:'📊'},
+  'Tecnologia': {bg:'rgba(20,184,166,.12)',color:'var(--teal)',border:'rgba(20,184,166,.2)',icon:'💻'},
+  'Carreira': {bg:'rgba(245,158,11,.1)',color:'var(--gold)',border:'rgba(245,158,11,.2)',icon:'🎯'},
+};
+var _gradients = [
+  'linear-gradient(135deg,#0a1a20 0%,#0d3040 100%)',
+  'linear-gradient(135deg,#0a1a10 0%,#0d3020 100%)',
+  'linear-gradient(135deg,#1a0a20 0%,#2d1a40 100%)',
+  'linear-gradient(135deg,#1a0a10 0%,#3d1a10 100%)',
+  'linear-gradient(135deg,#0a0a1a 0%,#1a1a40 100%)',
+];
+
+function loadFirestoreArticles(){
+  if(!window._wamDB) return;
+  var user = window._wamAuth ? window._wamAuth.currentUser : null;
+  var query = window._wamDB.collection('artigos').orderBy('createdAt','desc');
+  // Admin sees all; visitors see only published
+  if(!user || user.email !== ADMIN_EMAIL){
+    query = query.where('published','==',true);
+  }
+  query.get().then(function(snap){
+    var container = document.getElementById('dynamicArticles');
+    if(!container) return;
+    container.innerHTML = '';
+    snap.forEach(function(doc){
+      var d = doc.data();
+      var id = doc.id;
+      var isAdmin = user && user.email === ADMIN_EMAIL;
+      var c = _categoryColors[d.category] || _categoryColors['Tecnologia'];
+      var grad = _gradients[Math.abs(id.charCodeAt(0)%_gradients.length)];
+      var card = document.createElement('div');
+      card.className = 'blog-card reveal is-dynamic';
+      if(!d.published) card.style.opacity='.6';
+      card.innerHTML =
+        '<div class="blog-banner" style="background:'+grad+'">'+
+          '<span class="blog-banner-icon">'+c.icon+'</span>'+
+          '<span class="blog-tag" style="background:'+c.bg+';color:'+c.color+';border:.5px solid '+c.border+'">'+d.category+'</span>'+
+          (isAdmin && !d.published ? '<span class="blog-new-badge" style="position:absolute;top:.6rem;left:.6rem">Rascunho</span>' : '')+
+          '<span class="blog-new-badge" style="position:absolute;top:.6rem;right:.6rem">Novo</span>'+
+        '</div>'+
+        '<div class="blog-body">'+
+          '<p class="blog-title">'+
+            '<span data-lang-pt>'+d.title+'</span>'+
+            '<span data-lang-en>'+d.titleEn+'</span>'+
+          '</p>'+
+          '<p class="blog-excerpt">'+
+            '<span data-lang-pt>'+d.desc+'</span>'+
+            '<span data-lang-en>'+d.descEn+'</span>'+
+          '</p>'+
+          '<div class="blog-meta">'+
+            '<span class="blog-date">'+d.date+'</span>'+
+            (d.readTime ? '<span class="blog-reading-time">'+d.readTime+'</span>' : '')+
+            '<span class="blog-read"><span data-lang-pt>Ler artigo →</span><span data-lang-en>Read article →</span></span>'+
+          '</div>'+
+          (isAdmin ?
+            '<div style="display:flex;gap:.4rem;margin-top:.6rem">'+
+              '<button class="editor-tb-btn" onclick="event.stopPropagation();openEditor(\''+id+'\')">✏️ Editar</button>'+
+              '<button class="editor-tb-btn" onclick="event.stopPropagation();deleteArticle(\''+id+'\')">🗑️ Apagar</button>'+
+              '<button class="editor-tb-btn" onclick="event.stopPropagation();togglePublish(\''+id+'\','+d.published+')">'+
+                (d.published ? '📥 Despublicar' : '🚀 Publicar')+
+              '</button>'+
+            '</div>' : '')+
+          '<button class="blog-share-btn show" onclick="event.stopPropagation();shareArticleUrl(\''+id+'\',\''+encodeURIComponent(d.title)+'\')">'+
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'+
+            'Compartilhar'+
+          '</button>'+
+        '</div>';
+      card.onclick = function(){ openDynamicArticle(id, d); };
+      container.appendChild(card);
+    });
+    // Apply current language
+    applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  }).catch(function(e){ console.warn('[WAM] Articles load error:', e); });
+}
+
+function openDynamicArticle(id, d){
+  var isLangEn = document.documentElement.getAttribute('data-lang')==='en';
+  var title = isLangEn ? d.titleEn : d.title;
+  var body  = d.body || '<p>Conteúdo não disponível.</p>';
+  var modal = document.getElementById('articleModal');
+  var content = document.getElementById('articleContent');
+  if(!modal||!content) return;
+  content.innerHTML =
+    '<div class="article-header">'+
+      '<p class="article-tag" style="margin-bottom:.5rem;font-family:var(--mono);font-size:.65rem;color:var(--teal);letter-spacing:.1em;text-transform:uppercase">'+d.category+'</p>'+
+      '<h2 class="article-title">'+title+'</h2>'+
+      '<div class="article-meta">'+
+        '<span>'+d.date+'</span>'+
+        (d.readTime ? '<span>· '+d.readTime+' de leitura</span>' : '')+
+        '<button onclick="shareArticleUrl(\''+id+'\',\''+encodeURIComponent(title)+'\')" style="margin-left:auto;background:none;border:.5px solid var(--border);border-radius:5px;padding:.2rem .7rem;color:var(--muted);font-family:var(--mono);font-size:.65rem;cursor:pointer">🔗 Compartilhar</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="article-body-text">'+body+'</div>';
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  // Update URL for sharing
+  history.pushState(null,'','?art='+id);
+}
+
+function shareArticleUrl(id, title){
+  var url = location.origin + location.pathname + '?art=' + id;
+  var decoded = decodeURIComponent(title);
+  if(navigator.share){
+    navigator.share({title: decoded, url: url}).catch(function(){});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      alert('🔗 Link copiado: ' + url);
+    });
+  } else {
+    window.prompt('Copie o link:', url);
+  }
+}
+
+function deleteArticle(id){
+  if(!confirm('Apagar este artigo permanentemente?')) return;
+  if(window._wamDB) window._wamDB.collection('artigos').doc(id).delete()
+    .then(function(){ loadFirestoreArticles(); });
+}
+function togglePublish(id, current){
+  if(window._wamDB) window._wamDB.collection('artigos').doc(id).update({published:!current})
+    .then(function(){ loadFirestoreArticles(); });
+}
+
+/* ── DEEP LINK: open article from URL ?art=ID ─────── */
+(function(){
+  var params = new URLSearchParams(location.search);
+  var artId = params.get('art');
+  if(!artId) return;
+  // Wait for Firestore articles to load
+  var retries = 0;
+  function tryOpen(){
+    if(!window._wamDB){ if(retries++<20) setTimeout(tryOpen,500); return; }
+    window._wamDB.collection('artigos').doc(artId).get().then(function(doc){
+      if(doc.exists) openDynamicArticle(artId, doc.data());
+    });
+  }
+  setTimeout(tryOpen, 1200);
 })();
 </script>
 </body>

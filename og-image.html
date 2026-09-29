@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1200px;height:630px;overflow:hidden;
+    background:#0f172a;font-family:'Segoe UI',system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:60px 80px;position:relative}
+  body::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 30% 50%,rgba(20,184,166,.12) 0%,transparent 60%),
+               radial-gradient(ellipse at 80% 20%,rgba(59,130,246,.1) 0%,transparent 50%)}
+  .mono{font-family:'Courier New',monospace}
+  .left{z-index:1;max-width:640px}
+  .tag{font-family:'Courier New',monospace;font-size:16px;color:#14b8a6;letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+  h1{font-size:64px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-.03em;margin-bottom:16px}
+  h1 span{color:#14b8a6}
+  .sub{font-size:22px;color:#94a3b8;line-height:1.5;margin-bottom:36px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:rgba(255,255,255,.07);border:.5px solid rgba(255,255,255,.12);
+    border-radius:20px;padding:6px 16px;font-size:14px;color:#cbd5e1;font-family:'Courier New',monospace}
+  .right{z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px}
+  .avatar-ring{width:180px;height:180px;border-radius:50%;
+    background:linear-gradient(135deg,#14b8a6,#3b82f6);padding:3px}
+  .avatar-inner{width:100%;height:100%;border-radius:50%;background:#1e293b;
+    display:flex;align-items:center;justify-content:center;font-size:72px;font-weight:800;color:#14b8a6}
+  .url{font-family:'Courier New',monospace;font-size:14px;color:#475569;margin-top:8px}
+  .metrics{display:flex;gap:16px;margin-top:8px}
+  .metric{text-align:center}
+  .metric-n{font-size:24px;font-weight:800;color:#14b8a6;display:block}
+  .metric-l{font-size:11px;color:#64748b;font-family:'Courier New',monospace}
+  .corner{position:absolute;font-family:'Courier New',monospace;font-size:13px;color:#1e293b}
+  .tl{top:24px;left:30px;color:#14b8a6;font-weight:700;font-size:16px}
+  .br{bottom:24px;right:30px;color:#334155}
+</style>
+</head>
+<body>
+  <div class="tl">[ WAM.dev ]</div>
+  <div class="br">martinswillians.github.io/paginapessoal</div>
+  <div class="left">
+    <p class="tag">// Analista de TI · Brasília, DF</p>
+    <h1>Willians<br><span>Martins</span></h1>
+    <p class="sub">Especialista em gestão operacional de ambientes de missão crítica, análise de requisitos e metodologias ágeis.</p>
+    <div class="chips">
+      <span class="chip">Scrum Master</span>
+      <span class="chip">Análise de Requisitos</span>
+      <span class="chip">Dataprev</span>
+      <span class="chip">17+ anos</span>
+    </div>
+  </div>
+  <div class="right">
+    <div class="avatar-ring"><div class="avatar-inner">WM</div></div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-n">8M+</span><span class="metric-l">beneficiários</span></div>
+      <div class="metric"><span class="metric-n">5</span><span class="metric-l">projetos gov.</span></div>
+    </div>
+    <div class="url">WAM.dev</div>
+  </div>
+</body>
+</html>
