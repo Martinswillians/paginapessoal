@@ -3834,8 +3834,9 @@ function initAuthListener(){
 // Secret trigger: click WAM.dev logo 5x within 3s
 (function(){
   var count=0, timer;
-  var logo = document.querySelector('.nav-logo');
+  var logo = document.querySelector('.logo');
   if(!logo) return;
+  logo.style.cursor='pointer';
   logo.addEventListener('click', function(e){
     count++;
     clearTimeout(timer);
