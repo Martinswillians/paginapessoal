@@ -2557,7 +2557,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 
 <footer>
   <p>© 2026 Willians Martins · <span data-lang-pt>Analista de TI · Brasília, DF</span><span data-lang-en>IT Analyst · Brasília, Brazil</span></p>
-  <!-- Mobile action bar (replaces floating buttons) -->
+  <!-- Mobile action bar -->
   <div class="footer-actions">
     <button class="footer-action-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
@@ -2572,6 +2572,12 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
       <span data-lang-pt>Acesso</span><span data-lang-en>Access</span>
     </button>
   </div>
+  <!-- Admin login link (small, subtle) -->
+  <p style="margin-top:.8rem">
+    <button id="adminLoginBtn" onclick="openLoginModal()" style="background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.58rem;color:var(--border);transition:color .2s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--border)'">
+      🔒 admin
+    </button>
+  </p>
 </footer>
 
 <script>
@@ -3823,9 +3829,14 @@ function initAuthListener(){
     if(user && user.email === ADMIN_EMAIL){
       if(bar){ bar.style.display='flex'; document.body.style.paddingTop='48px'; }
       if(emailEl) emailEl.textContent = user.email;
+      // Hide the footer login button when admin is logged in
+      var loginBtn = document.getElementById('adminLoginBtn');
+      if(loginBtn) loginBtn.style.display='none';
     } else {
       if(bar) bar.style.display='none';
       document.body.style.paddingTop='';
+      var loginBtn2 = document.getElementById('adminLoginBtn');
+      if(loginBtn2) loginBtn2.style.display='inline';
     }
   });
 }
@@ -3999,8 +4010,9 @@ var _gradients = [
 function loadFirestoreArticles(){
   if(!window._wamDB) return;
   var user = window._wamAuth ? window._wamAuth.currentUser : null;
-  var query = window._wamDB.collection('artigos').orderBy('createdAt','desc');
-  // Admin sees all; visitors see only published
+  // Simple query without orderBy — avoids composite index requirement
+  // Admin sees all; visitors see only published — sorted client-side
+  var query = window._wamDB.collection('artigos');
   if(!user || user.email !== ADMIN_EMAIL){
     query = query.where('published','==',true);
   }
@@ -4008,9 +4020,16 @@ function loadFirestoreArticles(){
     var container = document.getElementById('dynamicArticles');
     if(!container) return;
     container.innerHTML = '';
-    snap.forEach(function(doc){
-      var d = doc.data();
-      var id = doc.id;
+    // Collect and sort client-side (newest first)
+    var docs = [];
+    snap.forEach(function(doc){ docs.push({id:doc.id, d:doc.data()}); });
+    docs.sort(function(a,b){
+      var ta = a.d.createdAt ? (a.d.createdAt.seconds||0) : 0;
+      var tb = b.d.createdAt ? (b.d.createdAt.seconds||0) : 0;
+      return tb - ta;
+    });
+    docs.forEach(function(item){
+      var d = item.d; var id = item.id;
       var isAdmin = user && user.email === ADMIN_EMAIL;
       var c = _categoryColors[d.category] || _categoryColors['Tecnologia'];
       var grad = _gradients[Math.abs(id.charCodeAt(0)%_gradients.length)];
@@ -4053,7 +4072,7 @@ function loadFirestoreArticles(){
         '</div>';
       card.onclick = function(){ openDynamicArticle(id, d); };
       container.appendChild(card);
-    });
+    }); // end docs.forEach
     // Apply current language
     applyLang(document.documentElement.getAttribute('data-lang')||'pt');
   }).catch(function(e){ console.warn('[WAM] Articles load error:', e); });
