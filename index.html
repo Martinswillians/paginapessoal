@@ -2574,8 +2574,8 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
   </div>
   <!-- Admin login link (small, subtle) -->
   <p style="margin-top:.8rem">
-    <button id="adminLoginBtn" onclick="openLoginModal()" style="background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.58rem;color:var(--border);transition:color .2s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--border)'">
-      🔒 admin
+    <button id="adminLoginBtn" onclick="openLoginModal()" style="background:rgba(255,255,255,.04);border:.5px solid rgba(255,255,255,.08);border-radius:5px;cursor:pointer;font-family:var(--mono);font-size:.65rem;color:var(--muted);padding:.3rem .8rem;transition:all .2s" onmouseover="this.style.color='var(--teal)';this.style.borderColor='rgba(20,184,166,.3)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='rgba(255,255,255,.08)'">
+      🔒 Admin
     </button>
   </p>
 </footer>
@@ -3983,7 +3983,8 @@ function publishArticle(published){
   promise.then(function(){
     errEl.textContent = '';
     closeEditor();
-    loadFirestoreArticles();
+    // Small delay to ensure Firestore write propagates before re-fetching
+    setTimeout(function(){ loadFirestoreArticles(); }, 400);
     alert(published ? '✅ Artigo publicado!' : '💾 Rascunho salvo!');
   }).catch(function(e){
     errEl.textContent = 'Erro: '+e.message;
@@ -4009,7 +4010,8 @@ var _gradients = [
 
 function loadFirestoreArticles(){
   if(!window._wamDB) return;
-  var user = window._wamAuth ? window._wamAuth.currentUser : null;
+  // Re-check auth state fresh each time
+  var user = (window._wamAuth && window._wamAuth.currentUser) ? window._wamAuth.currentUser : null;
   // Simple query without orderBy — avoids composite index requirement
   // Admin sees all; visitors see only published — sorted client-side
   var query = window._wamDB.collection('artigos');
@@ -4034,7 +4036,7 @@ function loadFirestoreArticles(){
       var c = _categoryColors[d.category] || _categoryColors['Tecnologia'];
       var grad = _gradients[Math.abs(id.charCodeAt(0)%_gradients.length)];
       var card = document.createElement('div');
-      card.className = 'blog-card reveal is-dynamic';
+      card.className = 'blog-card is-dynamic'; card.style.opacity='1'; card.style.transform='none';
       if(!d.published) card.style.opacity='.6';
       card.innerHTML =
         '<div class="blog-banner" style="background:'+grad+'">'+
@@ -4095,7 +4097,10 @@ function openDynamicArticle(id, d){
         '<button onclick="shareArticleUrl(\''+id+'\',\''+encodeURIComponent(title)+'\')" style="margin-left:auto;background:none;border:.5px solid var(--border);border-radius:5px;padding:.2rem .7rem;color:var(--muted);font-family:var(--mono);font-size:.65rem;cursor:pointer">🔗 Compartilhar</button>'+
       '</div>'+
     '</div>'+
-    '<div class="article-body-text">'+body+'</div>';
+    '<div class="article-body-text" id="dynArticleBody"></div>';
+  // Set body HTML safely after insertion
+  var bodyEl = document.getElementById('dynArticleBody');
+  if(bodyEl) bodyEl.innerHTML = body;
   modal.classList.add('open');
   document.body.style.overflow='hidden';
   // Update URL for sharing
@@ -4119,11 +4124,11 @@ function shareArticleUrl(id, title){
 function deleteArticle(id){
   if(!confirm('Apagar este artigo permanentemente?')) return;
   if(window._wamDB) window._wamDB.collection('artigos').doc(id).delete()
-    .then(function(){ loadFirestoreArticles(); });
+    .then(function(){ setTimeout(function(){ loadFirestoreArticles(); }, 400); });
 }
 function togglePublish(id, current){
   if(window._wamDB) window._wamDB.collection('artigos').doc(id).update({published:!current})
-    .then(function(){ loadFirestoreArticles(); });
+    .then(function(){ setTimeout(function(){ loadFirestoreArticles(); }, 400); });
 }
 
 /* ── DEEP LINK: open article from URL ?art=ID ─────── */
