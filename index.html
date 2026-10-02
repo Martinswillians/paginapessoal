@@ -291,6 +291,48 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content
 
 footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);border-top:.5px solid var(--border)}
 
+/* ── CMS PANEL ──────────────────────────────────────────── */
+.cms-overlay{position:fixed;inset:0;z-index:10001;display:none;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
+.cms-overlay.open{display:flex}
+.cms-wrap{display:flex;width:100%;height:100%;background:var(--bg2);overflow:hidden}
+.cms-sidebar{width:210px;flex-shrink:0;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.cms-sidebar-head{padding:.9rem 1.2rem .7rem;border-bottom:.5px solid var(--border);font-family:var(--mono);font-size:.7rem;color:var(--teal);display:flex;align-items:center;justify-content:space-between}
+.cms-sidebar-head button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem}
+.cms-nav-item{display:flex;align-items:center;gap:.55rem;padding:.65rem 1.2rem;font-size:.77rem;cursor:pointer;border-left:2px solid transparent;background:none;border-top:none;border-right:none;border-bottom:none;color:var(--muted);width:100%;text-align:left;font-family:inherit;transition:all .15s}
+.cms-nav-item:hover{background:var(--bg2);color:var(--text)}
+.cms-nav-item.active{background:rgba(20,184,166,.08);color:var(--teal);border-left-color:var(--teal)}
+.cms-nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s}
+.cms-nav-item.has-data .cms-nav-dot{background:var(--teal)}
+.cms-content{flex:1;overflow-y:auto;padding:1.5rem 2rem}
+.cms-sec-title{font-size:.95rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem}
+.cms-list{margin-bottom:1rem}
+.cms-list-item{display:flex;align-items:flex-start;justify-content:space-between;padding:.65rem .9rem;background:var(--card);border:.5px solid var(--border);border-radius:8px;margin-bottom:.45rem;gap:.8rem}
+.cms-list-item-label{font-size:.8rem;flex:1;line-height:1.4}
+.cms-list-item-label span{font-size:.66rem;color:var(--muted);display:block;margin-top:.1rem}
+.cms-list-btns{display:flex;gap:.3rem;flex-shrink:0}
+.cms-list-btn{background:var(--bg3);border:.5px solid var(--border);border-radius:4px;padding:.22rem .5rem;font-size:.63rem;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+.cms-list-btn:hover{background:rgba(20,184,166,.12);color:var(--teal)}
+.cms-list-btn.del:hover{background:rgba(239,68,68,.1);color:#f87171}
+.cms-add-btn{width:100%;background:rgba(20,184,166,.07);border:.5px dashed rgba(20,184,166,.3);border-radius:8px;padding:.55rem;color:var(--teal);font-family:var(--mono);font-size:.7rem;cursor:pointer;transition:background .2s}
+.cms-add-btn:hover{background:rgba(20,184,166,.14)}
+.cms-form{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+.cms-field-full{grid-column:1/-1}
+.cms-field label{display:block;font-family:var(--mono);font-size:.59rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.28rem}
+.cms-field input,.cms-field textarea,.cms-field select{width:100%;background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:.52rem .72rem;color:var(--text);font-family:inherit;font-size:.78rem;outline:none;transition:border-color .2s}
+.cms-field input:focus,.cms-field textarea:focus{border-color:var(--teal)}
+.cms-field textarea{resize:vertical;min-height:76px;line-height:1.55}
+.cms-form-btns{grid-column:1/-1;display:flex;gap:.5rem;padding-top:.5rem;border-top:.5px solid var(--border);margin-top:.2rem}
+.cms-save-btn{background:var(--teal);color:#fff;border:none;border-radius:6px;padding:.48rem 1.3rem;font-family:var(--mono);font-size:.7rem;cursor:pointer;font-weight:700;transition:background .2s}
+.cms-save-btn:hover{background:var(--accent2)}
+.cms-cancel-btn{background:var(--bg3);border:.5px solid var(--border);color:var(--muted);border-radius:6px;padding:.48rem 1rem;font-family:var(--mono);font-size:.7rem;cursor:pointer}
+.cms-status{font-family:var(--mono);font-size:.66rem;color:var(--teal);margin-top:.45rem;min-height:1rem}
+@media(max-width:768px){
+  .cms-sidebar{width:160px}
+  .cms-content{padding:.9rem}
+  .cms-form{grid-template-columns:1fr}
+  .cms-field-full{grid-column:1}
+}
+
 /* ── ADMIN BAR ─────────────────────────────────── */
 .admin-bar{
   position:fixed;top:0;left:0;width:100%;z-index:9999;
@@ -2443,7 +2485,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 <div class="section" id="formacao">
   <p class="sec-label"><span data-lang-pt>// 08. formação</span><span data-lang-en>// 08. education</span></p>
   <h2 class="sec-title"><span data-lang-pt>Educação</span><span data-lang-en>Education</span></h2>
-  <div class="form-grid">
+  <div class="form-grid" id="formacaoList">
     <div class="form-card">
       <div class="form-icon"><span data-lang-pt>// pós-graduação</span><span data-lang-en>// postgraduate</span></div>
       <p class="form-degree"><span data-lang-pt>Tecnologia de Redes</span><span data-lang-en>Network Technology</span></p>
@@ -2463,7 +2505,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 
   <p class="sec-label" style="margin-top:3rem"><span data-lang-pt>// certificações &amp; cursos</span><span data-lang-en>// certifications &amp; courses</span></p>
   <h2 class="sec-title" style="font-size:1.6rem;margin-bottom:1.5rem"><span data-lang-pt>Certificações</span><span data-lang-en>Certifications</span></h2>
-  <div class="cert-grid">
+  <div class="cert-grid" id="certsList">
     <div class="cert-item"><span class="cert-icon">◆</span><div><div class="cert-name">Scrum Fundamentals (SFC)</div><div class="cert-source">SCRUMstudy</div></div></div>
     <div class="cert-item"><span class="cert-icon">◆</span><div><div class="cert-name"><span data-lang-pt>Product Owner e Requisitos</span><span data-lang-en>Product Owner and Requirements</span></div><div class="cert-source">Engesoftware · 2024</div></div></div>
     <div class="cert-item"><span class="cert-icon">◆</span><div><div class="cert-name"><span data-lang-pt>Jira na Prática</span><span data-lang-en>Jira in Practice</span></div><div class="cert-source">Engesoftware · 2024</div></div></div>
@@ -3683,6 +3725,7 @@ function closeCaseIfBg(e){
     Admin Mode · <span id="adminEmail" style="color:var(--muted)"></span>
   </div>
   <div class="admin-bar-btns">
+    <button class="admin-btn" onclick="openCMS()">⚙️ Gerenciar Site</button>
     <button class="admin-btn" onclick="openEditor()">✏️ Novo Artigo</button>
     <button class="admin-btn danger" onclick="doLogout()">Sair</button>
   </div>
@@ -3810,6 +3853,7 @@ function closeCaseIfBg(e){
             console.log('[WAM] Firebase ✓');
             initAuthListener();
             loadFirestoreArticles();
+            window.dispatchEvent(new Event('wam-firebase-ready'));
           } catch(e){ console.warn('[WAM] Firebase init error:', e.message); }
         });
       });
@@ -4146,6 +4190,275 @@ function togglePublish(id, current){
   }
   setTimeout(tryOpen, 1200);
 })();
+</script>
+<!-- ── CMS PANEL ──────────────────────────────────── -->
+<div class="cms-overlay" id="cmsOverlay">
+  <div class="cms-wrap">
+    <div class="cms-sidebar">
+      <div class="cms-sidebar-head">⚙️ WAM CMS <button onclick="closeCMS()">✕</button></div>
+      <button class="cms-nav-item active" id="cmsNav-sobre"   onclick="cmsLoad('sobre')">   <span class="cms-nav-dot"></span>👤 Sobre Mim</button>
+      <button class="cms-nav-item"        id="cmsNav-projetos" onclick="cmsLoad('projetos')"><span class="cms-nav-dot"></span>🚀 Projetos</button>
+      <button class="cms-nav-item"        id="cmsNav-blog"    onclick="cmsLoad('blog')">    <span class="cms-nav-dot"></span>✍️ Artigos</button>
+      <button class="cms-nav-item"        id="cmsNav-dep"     onclick="cmsLoad('dep')">     <span class="cms-nav-dot"></span>💬 Depoimentos</button>
+      <button class="cms-nav-item"        id="cmsNav-repos"   onclick="cmsLoad('repos')">   <span class="cms-nav-dot"></span>🐙 Open Source</button>
+      <button class="cms-nav-item"        id="cmsNav-sites"   onclick="cmsLoad('sites')">   <span class="cms-nav-dot"></span>🌐 Sites no Ar</button>
+      <button class="cms-nav-item"        id="cmsNav-exp"     onclick="cmsLoad('exp')">     <span class="cms-nav-dot"></span>💼 Experiência</button>
+      <button class="cms-nav-item"        id="cmsNav-formacao" onclick="cmsLoad('formacao')"><span class="cms-nav-dot"></span>🎓 Formação</button>
+      <button class="cms-nav-item"        id="cmsNav-certs"   onclick="cmsLoad('certs')">   <span class="cms-nav-dot"></span>📜 Certificações</button>
+      <button class="cms-nav-item"        id="cmsNav-contato" onclick="cmsLoad('contato')"> <span class="cms-nav-dot"></span>📬 Contato</button>
+    </div>
+    <div class="cms-content" id="cmsContent">
+      <p style="color:var(--muted);font-size:.85rem">Selecione uma seção para editar.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   WAM CMS ENGINE — todas as 10 seções do portfólio
+   ══════════════════════════════════════════════════ */
+var CMS_SCHEMAS = {
+  sobre:   { label:'Sobre Mim',    icon:'👤', type:'single',
+    fields:[{k:'bio_pt',l:'Bio (PT)',t:'textarea',full:true},{k:'bio_en',l:'Bio (EN)',t:'textarea',full:true},{k:'role_pt',l:'Cargo (PT)',t:'text'},{k:'role_en',l:'Cargo (EN)',t:'text'}] },
+  projetos:{ label:'Projetos',     icon:'🚀', type:'list', titleKey:'title_pt',
+    fields:[{k:'title_pt',l:'Título PT',t:'text'},{k:'title_en',l:'Título EN',t:'text'},{k:'client_pt',l:'Cliente PT',t:'text'},{k:'client_en',l:'Cliente EN',t:'text'},{k:'desc_pt',l:'Descrição PT',t:'textarea',full:true},{k:'desc_en',l:'Descrição EN',t:'textarea',full:true},{k:'tags',l:'Tags (vírgula)',t:'text',full:true},{k:'icon',l:'Ícone emoji',t:'text'},{k:'gradient',l:'Gradiente CSS',t:'text'}] },
+  dep:     { label:'Depoimentos',  icon:'💬', type:'list', titleKey:'name',
+    fields:[{k:'name',l:'Nome',t:'text'},{k:'initials',l:'Iniciais',t:'text'},{k:'role_pt',l:'Cargo PT',t:'text'},{k:'role_en',l:'Cargo EN',t:'text'},{k:'text_pt',l:'Depoimento PT',t:'textarea',full:true},{k:'text_en',l:'Depoimento EN',t:'textarea',full:true}] },
+  repos:   { label:'Open Source',  icon:'🐙', type:'list', titleKey:'name',
+    fields:[{k:'name',l:'Nome do repo',t:'text'},{k:'url',l:'URL GitHub',t:'text'},{k:'desc_pt',l:'Descrição PT',t:'textarea',full:true},{k:'desc_en',l:'Descrição EN',t:'textarea',full:true},{k:'tags',l:'Tags (vírgula)',t:'text',full:true},{k:'liveUrl',l:'Site ao vivo',t:'text'}] },
+  sites:   { label:'Sites no Ar',  icon:'🌐', type:'list', titleKey:'title',
+    fields:[{k:'title',l:'Título',t:'text'},{k:'url',l:'URL do site',t:'text'},{k:'desc_pt',l:'Descrição PT',t:'textarea',full:true},{k:'desc_en',l:'Descrição EN',t:'textarea',full:true},{k:'gradient',l:'Gradiente CSS',t:'text'},{k:'icon',l:'Ícone emoji',t:'text'}] },
+  exp:     { label:'Experiência',  icon:'💼', type:'list', titleKey:'title_pt',
+    fields:[{k:'period_start',l:'Início (Jan/2026)',t:'text'},{k:'period_end',l:'Fim (Atual)',t:'text'},{k:'is_current',l:'Atual? (true/false)',t:'text'},{k:'title_pt',l:'Cargo PT',t:'text'},{k:'title_en',l:'Cargo EN',t:'text'},{k:'company_pt',l:'Empresa PT',t:'text',full:true},{k:'company_en',l:'Empresa EN',t:'text',full:true},{k:'bullets_pt',l:'Atividades PT (1 por linha)',t:'textarea',full:true},{k:'bullets_en',l:'Activities EN (1 per line)',t:'textarea',full:true},{k:'tags',l:'Tags (vírgula)',t:'text',full:true}] },
+  formacao:{ label:'Formação',     icon:'🎓', type:'list', titleKey:'degree_pt',
+    fields:[{k:'type_pt',l:'Tipo PT (Pós-Grad…)',t:'text'},{k:'type_en',l:'Type EN',t:'text'},{k:'degree_pt',l:'Curso PT',t:'text'},{k:'degree_en',l:'Course EN',t:'text'},{k:'institution',l:'Instituição',t:'text',full:true},{k:'year',l:'Ano/Período',t:'text'},{k:'status',l:'Status (Concluído/Cursando)',t:'text'}] },
+  certs:   { label:'Certificações',icon:'📜', type:'list', titleKey:'name',
+    fields:[{k:'name',l:'Nome PT',t:'text',full:true},{k:'name_en',l:'Name EN',t:'text',full:true},{k:'source',l:'Instituição · Ano',t:'text'}] },
+  contato: { label:'Contato',      icon:'📬', type:'single',
+    fields:[{k:'email',l:'E-mail',t:'text',full:true},{k:'whatsapp',l:'WhatsApp (5561…)',t:'text'},{k:'linkedin',l:'URL LinkedIn',t:'text',full:true},{k:'github',l:'URL GitHub',t:'text',full:true}] }
+};
+
+function openCMS(){ document.getElementById('cmsOverlay').classList.add('open'); cmsLoad('sobre'); }
+function closeCMS(){ document.getElementById('cmsOverlay').classList.remove('open'); }
+
+function cmsLoad(id){
+  document.querySelectorAll('.cms-nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var navEl = document.getElementById('cmsNav-'+id);
+  if(navEl) navEl.classList.add('active');
+  if(id==='blog'){ closeCMS(); openEditor(); return; }
+  var schema = CMS_SCHEMAS[id];
+  if(!schema) return;
+  schema.type==='single' ? cmsLoadSingle(id,schema) : cmsLoadList(id,schema);
+}
+
+/* ── Single editor ── */
+function cmsLoadSingle(id,schema){
+  var c=document.getElementById('cmsContent');
+  c.innerHTML='<p style="color:var(--muted);font-size:.8rem">Carregando…</p>';
+  function render(data){
+    var h='<div class="cms-sec-title">'+schema.icon+' '+schema.label+'</div><div class="cms-form">';
+    schema.fields.forEach(function(f){
+      h+='<div class="cms-field'+(f.full?' cms-field-full':'')+'">';
+      h+='<label>'+f.l+'</label>';
+      var val=(data&&data[f.k])||'';
+      h+=f.t==='textarea'?'<textarea id="cmsFld-'+f.k+'" rows="4">'+val+'</textarea>':'<input type="text" id="cmsFld-'+f.k+'" value="'+val.replace(/"/g,'&quot;')+'">';
+      h+='</div>';
+    });
+    h+='<div class="cms-form-btns"><button class="cms-save-btn" onclick="cmsSaveSingle(\''+id+'\')">💾 Salvar</button></div><div class="cms-status" id="cmsStatus"></div></div>';
+    c.innerHTML=h;
+  }
+  if(!window._wamDB){render(null);return;}
+  window._wamDB.collection('wam_cms').doc(id).get().then(function(doc){render(doc.exists?doc.data():null);}).catch(function(){render(null);});
+}
+function cmsSaveSingle(id){
+  var schema=CMS_SCHEMAS[id], data={};
+  schema.fields.forEach(function(f){var el=document.getElementById('cmsFld-'+f.k);if(el)data[f.k]=el.value.trim();});
+  var st=document.getElementById('cmsStatus');
+  if(st)st.textContent='Salvando…';
+  window._wamDB.collection('wam_cms').doc(id).set(data,{merge:true}).then(function(){
+    if(st)st.textContent='✅ Salvo!';
+    cmsRenderSection(id,data);
+    setTimeout(function(){if(st)st.textContent='';},3000);
+  }).catch(function(e){if(st)st.textContent='Erro: '+e.message;});
+}
+
+/* ── List editor ── */
+function cmsLoadList(id,schema){
+  var c=document.getElementById('cmsContent');
+  c.innerHTML='<p style="color:var(--muted);font-size:.8rem">Carregando…</p>';
+  function render(items){
+    items=items||[];
+    var h='<div class="cms-sec-title">'+schema.icon+' '+schema.label;
+    h+=' <button class="cms-add-btn" style="width:auto;padding:.22rem .8rem;margin-left:auto;font-size:.66rem" onclick="cmsEditItem(\''+id+'\',items.length-items.length-1)">+ Adicionar</button></div>';
+    h+='<div class="cms-list" id="cmsList-'+id+'">';
+    items.forEach(function(item,idx){
+      var label=item[schema.titleKey]||('Item '+(idx+1));
+      var sub=item.role_pt||item.company_pt||item.institution||item.source||item.url||'';
+      h+='<div class="cms-list-item"><div class="cms-list-item-label">'+label+'<span>'+sub+'</span></div>';
+      h+='<div class="cms-list-btns"><button class="cms-list-btn" onclick="cmsEditItem(\''+id+'\','+idx+')">✏️</button>';
+      h+='<button class="cms-list-btn del" onclick="cmsDeleteItem(\''+id+'\','+idx+')">🗑️</button></div></div>';
+    });
+    if(!items.length)h+='<p style="color:var(--muted);font-size:.78rem;padding:.5rem">Nenhum item ainda.</p>';
+    h+='</div><button class="cms-add-btn" onclick="cmsEditItem(\''+id+'\',-1)">+ Adicionar novo</button>';
+    c.innerHTML=h;
+    window['_cms_'+id]=items;
+  }
+  if(!window._wamDB){render([]);return;}
+  window._wamDB.collection('wam_cms').doc(id).get().then(function(doc){render(doc.exists?(doc.data().items||[]):[]);}).catch(function(){render([]);});
+}
+function cmsEditItem(id,idx){
+  var schema=CMS_SCHEMAS[id], items=window['_cms_'+id]||[], item=idx>=0?items[idx]:{};
+  var c=document.getElementById('cmsContent');
+  var h='<div class="cms-sec-title"><button onclick="cmsLoadList(\''+id+'\',CMS_SCHEMAS[\''+id+'\'])" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.78rem">← voltar</button> '+(idx>=0?'Editar':'Novo')+' item</div>';
+  h+='<div class="cms-form">';
+  schema.fields.forEach(function(f){
+    h+='<div class="cms-field'+(f.full?' cms-field-full':'')+'">';
+    h+='<label>'+f.l+'</label>';
+    var val=item[f.k]!==undefined?item[f.k]:'';
+    var textVal=Array.isArray(val)?val.join('\n'):String(val);
+    h+=f.t==='textarea'?'<textarea id="cmsItFld-'+f.k+'" rows="4">'+textVal+'</textarea>':'<input type="text" id="cmsItFld-'+f.k+'" value="'+textVal.replace(/"/g,'&quot;')+'">';
+    h+='</div>';
+  });
+  h+='<div class="cms-form-btns"><button class="cms-save-btn" onclick="cmsSaveItem(\''+id+'\','+idx+')">💾 Salvar</button><button class="cms-cancel-btn" onclick="cmsLoadList(\''+id+'\',CMS_SCHEMAS[\''+id+'\'])">Cancelar</button></div>';
+  h+='<div class="cms-status" id="cmsItemStatus"></div></div>';
+  c.innerHTML=h;
+}
+function cmsSaveItem(id,idx){
+  var schema=CMS_SCHEMAS[id], items=JSON.parse(JSON.stringify(window['_cms_'+id]||[])), newItem={};
+  schema.fields.forEach(function(f){
+    var el=document.getElementById('cmsItFld-'+f.k);
+    if(!el)return;
+    var val=el.value.trim();
+    newItem[f.k]=(f.k==='bullets_pt'||f.k==='bullets_en'||f.k==='tags')
+      ?val.split('\n').map(function(s){return s.trim();}).filter(Boolean):val;
+  });
+  if(idx>=0)items[idx]=newItem;else items.push(newItem);
+  var st=document.getElementById('cmsItemStatus');
+  if(st)st.textContent='Salvando…';
+  window._wamDB.collection('wam_cms').doc(id).set({items:items},{merge:true}).then(function(){
+    window['_cms_'+id]=items;
+    if(st)st.textContent='✅ Salvo!';
+    cmsRenderSection(id,{items:items});
+    setTimeout(function(){cmsLoadList(id,schema);},700);
+  }).catch(function(e){if(st)st.textContent='Erro: '+e.message;});
+}
+function cmsDeleteItem(id,idx){
+  if(!confirm('Apagar este item?'))return;
+  var items=JSON.parse(JSON.stringify(window['_cms_'+id]||[]));
+  items.splice(idx,1);
+  window._wamDB.collection('wam_cms').doc(id).set({items:items},{merge:true}).then(function(){
+    window['_cms_'+id]=items;
+    cmsRenderSection(id,{items:items});
+    cmsLoadList(id,CMS_SCHEMAS[id]);
+  });
+}
+
+/* ── Render sections ── */
+function cmsRenderSection(id,data){
+  var map={sobre:cmsRenderSobre,projetos:function(d){cmsRenderProjetos(d.items||[]);},dep:function(d){cmsRenderDep(d.items||[]);},repos:function(d){cmsRenderRepos(d.items||[]);},sites:function(d){cmsRenderSites(d.items||[]);},exp:function(d){cmsRenderExp(d.items||[]);},formacao:function(d){cmsRenderFormacao(d.items||[]);},certs:function(d){cmsRenderCerts(d.items||[]);},contato:cmsRenderContato};
+  if(map[id])map[id](data);
+}
+function cmsRenderSobre(d){
+  var b=document.querySelector('#sobre .sobre-bio');
+  if(b&&d.bio_pt){b.innerHTML='<span data-lang-pt>'+d.bio_pt+'</span><span data-lang-en>'+(d.bio_en||d.bio_pt)+'</span>';}
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderProjetos(items){
+  if(!items.length)return;
+  var g=document.getElementById('projGrid');if(!g)return;g.innerHTML='';
+  items.forEach(function(p){
+    var tags=Array.isArray(p.tags)?p.tags:(p.tags||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+    var card=document.createElement('div');card.className='proj-card reveal';
+    card.innerHTML='<div class="proj-banner" style="background:'+(p.gradient||'linear-gradient(135deg,#0a1a2e,#0d3058)')+'"><span class="proj-banner-icon">'+(p.icon||'🚀')+'</span></div><p class="proj-title"><span data-lang-pt>'+(p.title_pt||'')+'</span><span data-lang-en>'+(p.title_en||p.title_pt||'')+'</span></p><p class="proj-client"><span data-lang-pt>'+(p.client_pt||'')+'</span><span data-lang-en>'+(p.client_en||p.client_pt||'')+'</span></p><p class="proj-desc"><span data-lang-pt>'+(p.desc_pt||'')+'</span><span data-lang-en>'+(p.desc_en||p.desc_pt||'')+'</span></p><div class="proj-tags">'+tags.map(function(t){return'<span class="proj-tag">'+t+'</span>';}).join('')+'</div>';
+    g.appendChild(card);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderDep(items){
+  if(!items.length)return;
+  var g=document.getElementById('depGrid');if(!g)return;g.innerHTML='';
+  items.forEach(function(d){
+    var card=document.createElement('div');card.className='dep-card';
+    card.innerHTML='<p class="dep-quote"><span data-lang-pt>'+(d.text_pt||'')+'</span><span data-lang-en>'+(d.text_en||d.text_pt||'')+'</span></p><div class="dep-author"><div class="dep-avatar">'+(d.initials||((d.name||'?').substring(0,2).toUpperCase()))+'</div><div><p class="dep-name">'+(d.name||'')+'</p><p class="dep-role"><span data-lang-pt>'+(d.role_pt||'')+'</span><span data-lang-en>'+(d.role_en||d.role_pt||'')+'</span></p><div class="dep-stars">★★★★★</div></div></div>';
+    g.appendChild(card);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderRepos(items){
+  if(!items.length)return;
+  var g=document.getElementById('ghGrid');if(!g)return;g.innerHTML='';
+  items.forEach(function(r){
+    var tags=Array.isArray(r.tags)?r.tags:(r.tags||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+    var card=document.createElement('a');card.className='gh-card';card.href=r.url||'#';card.target='_blank';
+    card.innerHTML='<div class="gh-card-header"><svg class="gh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span class="gh-repo-name">'+(r.name||'')+'</span></div><p class="gh-desc"><span data-lang-pt>'+(r.desc_pt||'')+'</span><span data-lang-en>'+(r.desc_en||r.desc_pt||'')+'</span></p><div class="gh-meta">'+tags.map(function(t){return'<span class="gh-tag">'+t+'</span>';}).join('')+'</div><div class="gh-link-row"><span class="gh-link-text">'+(r.url||'').replace('https://github.com/','')+'</span><span class="gh-arrow">→</span></div>';
+    g.appendChild(card);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderSites(items){
+  if(!items.length)return;
+  var g=document.getElementById('sitesGrid');if(!g)return;
+  g.querySelectorAll('.site-card').forEach(function(el){el.remove();});
+  items.forEach(function(s){
+    var card=document.createElement('div');card.className='site-card';
+    card.innerHTML='<div class="site-preview" style="background:'+(s.gradient||'linear-gradient(135deg,#0a1a2e,#0d3058)')+'"><span style="font-size:2rem">'+(s.icon||'🌐')+'</span></div><div class="site-body"><p class="site-title">'+(s.title||'')+'</p><p class="site-url">'+(s.url||'')+'</p><p class="site-desc"><span data-lang-pt>'+(s.desc_pt||'')+'</span><span data-lang-en>'+(s.desc_en||s.desc_pt||'')+'</span></p><a href="'+(s.url||'#')+'" target="_blank" class="site-visit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Visitar site →</a></div>';
+    g.appendChild(card);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderExp(items){
+  if(!items.length)return;
+  var g=document.getElementById('expList');if(!g)return;g.innerHTML='';
+  items.forEach(function(e){
+    var bPt=Array.isArray(e.bullets_pt)?e.bullets_pt:(e.bullets_pt||'').split('\n').filter(Boolean);
+    var bEn=Array.isArray(e.bullets_en)?e.bullets_en:(e.bullets_en||'').split('\n').filter(Boolean);
+    var tags=Array.isArray(e.tags)?e.tags:(e.tags||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+    var cur=e.is_current==='true'||e.is_current===true;
+    var item=document.createElement('div');item.className='exp-item'+(cur?' current':'');
+    item.innerHTML='<div class="exp-period">'+(e.period_start||'')+' — '+(e.period_end||'')+(cur?'<br><span class="exp-current"><span data-lang-pt>● atual</span><span data-lang-en>● current</span></span>':'')+'</div><div><p class="exp-title"><span data-lang-pt>'+(e.title_pt||'')+'</span><span data-lang-en>'+(e.title_en||e.title_pt||'')+'</span></p><div class="exp-company-box"><p class="exp-company"><span data-lang-pt>'+(e.company_pt||'')+'</span><span data-lang-en>'+(e.company_en||e.company_pt||'')+'</span></p></div><ul class="exp-ul">'+bPt.map(function(b,i){return'<li><span data-lang-pt>'+b+'</span><span data-lang-en>'+(bEn[i]||b)+'</span></li>';}).join('')+'</ul><div class="exp-tags">'+tags.map(function(t){return'<span class="exp-tag">'+t+'</span>';}).join('')+'</div></div>';
+    g.appendChild(item);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderFormacao(items){
+  if(!items.length)return;
+  var g=document.getElementById('formacaoList');if(!g)return;g.innerHTML='';
+  items.forEach(function(f){
+    var el=document.createElement('div');el.className='form-card';
+    el.innerHTML='<div class="form-icon"><span data-lang-pt>// '+(f.type_pt||'')+'</span><span data-lang-en>// '+(f.type_en||f.type_pt||'')+'</span></div><p class="form-degree"><span data-lang-pt>'+(f.degree_pt||'')+'</span><span data-lang-en>'+(f.degree_en||f.degree_pt||'')+'</span></p><p class="form-school">'+(f.institution||'')+(f.year?' · '+f.year:'')+'</p>'+(f.status?'<p style="font-size:.65rem;color:var(--teal);margin-top:.3rem">'+f.status+'</p>':'');
+    g.appendChild(el);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderCerts(items){
+  if(!items.length)return;
+  var g=document.getElementById('certsList');if(!g)return;g.innerHTML='';
+  items.forEach(function(c){
+    var el=document.createElement('div');el.className='cert-item';
+    el.innerHTML='<span class="cert-icon">◆</span><div><div class="cert-name"><span data-lang-pt>'+(c.name||'')+'</span><span data-lang-en>'+(c.name_en||c.name||'')+'</span></div><div class="cert-source">'+(c.source||'')+'</div></div>';
+    g.appendChild(el);
+  });
+  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+}
+function cmsRenderContato(d){
+  if(!d)return;
+  if(d.email)document.querySelectorAll('a[href^="mailto:"]').forEach(function(el){el.href='mailto:'+d.email;var t=el.querySelector('[data-lang-pt]');if(t)t.textContent=d.email;else el.textContent=d.email;});
+  if(d.linkedin)document.querySelectorAll('a[href*="linkedin.com"]').forEach(function(el){el.href=d.linkedin;});
+}
+
+/* ── Load all sections on Firebase ready ── */
+function loadAllCmsSections(){
+  if(!window._wamDB)return;
+  ['sobre','projetos','dep','repos','sites','exp','formacao','certs','contato'].forEach(function(id){
+    window._wamDB.collection('wam_cms').doc(id).get().then(function(doc){
+      if(!doc.exists)return;
+      var navEl=document.getElementById('cmsNav-'+id);
+      if(navEl)navEl.classList.add('has-data');
+      cmsRenderSection(id,doc.data());
+    }).catch(function(){});
+  });
+}
+window.addEventListener('wam-firebase-ready', loadAllCmsSections);
 </script>
 </body>
 </html>
