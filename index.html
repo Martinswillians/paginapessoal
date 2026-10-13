@@ -386,6 +386,27 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 .admin-field textarea{resize:vertical;min-height:120px;font-size:.78rem;line-height:1.6}
 .admin-error{color:#f87171;font-size:.7rem;margin-top:.5rem;font-family:var(--mono)}
 
+/* ── WYSIWYG EDITOR ────────────────────────────── */
+.wysiwyg-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;padding:.5rem .6rem;background:var(--bg);border:.5px solid var(--border);border-radius:7px 7px 0 0}
+.tb-group{display:flex;gap:.2rem;align-items:center}
+.tb-sep{width:1px;height:18px;background:var(--border);margin:0 .2rem;flex-shrink:0}
+.tb-btn{background:var(--bg3);border:.5px solid var(--border);border-radius:4px;padding:.22rem .55rem;font-size:.7rem;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;font-family:var(--mono);white-space:nowrap}
+.tb-btn:hover{background:rgba(20,184,166,.15);color:var(--teal);border-color:rgba(20,184,166,.3)}
+.tb-btn.active{background:rgba(20,184,166,.2);color:var(--teal);border-color:rgba(20,184,166,.4)}
+.wysiwyg-editor{background:var(--bg2);border:.5px solid var(--border);border-top:none;border-radius:0 0 7px 7px;padding:1.2rem 1.5rem;min-height:260px;max-height:420px;overflow-y:auto;outline:none;font-size:.88rem;line-height:1.85;color:var(--muted);caret-color:var(--teal)}
+.wysiwyg-editor:empty::before{content:'Comece a escrever aqui…';color:var(--border);font-style:italic;pointer-events:none}
+.wysiwyg-editor h3{font-size:1rem;font-weight:700;color:var(--teal);margin:1.1rem 0 .4rem;line-height:1.3}
+.wysiwyg-editor h4{font-size:.88rem;font-weight:700;color:var(--accent2);margin:.9rem 0 .3rem}
+.wysiwyg-editor p{margin-bottom:.6rem}
+.wysiwyg-editor strong{color:var(--text);font-weight:700}
+.wysiwyg-editor em{font-style:italic}
+.wysiwyg-editor code{font-family:var(--mono);font-size:.78rem;color:var(--teal);background:rgba(20,184,166,.1);padding:.1rem .4rem;border-radius:3px;border:.5px solid rgba(20,184,166,.2)}
+.wysiwyg-editor ul{padding-left:1.3rem;margin:.5rem 0}
+.wysiwyg-editor li{margin-bottom:.3rem;list-style:disc}
+.wysiwyg-editor a{color:var(--teal);text-decoration:underline}
+.wysiwyg-editor blockquote{border-left:3px solid var(--teal);padding-left:1rem;font-style:italic;margin:.8rem 0}
+.wysiwyg-source{width:100%;background:var(--bg);border:.5px solid var(--border);border-top:none;border-radius:0 0 7px 7px;padding:.8rem 1rem;min-height:260px;font-family:var(--mono);font-size:.74rem;color:#94a3b8;resize:vertical;outline:none;line-height:1.7}
+
 /* ── ARTICLE EDITOR EXTRA ─────────────────────── */
 #editorModal .admin-modal-box{width:min(760px,95vw)}
 .editor-toolbar{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem}
@@ -3797,19 +3818,39 @@ function closeCaseIfBg(e){
       <input type="text" id="artDescEn" placeholder="Brief article description...">
     </div>
 
-    <div class="admin-field">
-      <label>Conteúdo (HTML)</label>
-      <div class="editor-toolbar">
-        <button class="editor-tb-btn" onclick="insertTag('h3')">H3</button>
-        <button class="editor-tb-btn" onclick="insertTag('p')">§ P</button>
-        <button class="editor-tb-btn" onclick="insertTag('strong')"><b>B</b></button>
-        <button class="editor-tb-btn" onclick="insertTag('em')"><i>I</i></button>
-        <button class="editor-tb-btn" onclick="insertTag('code')">{ }</button>
-        <button class="editor-tb-btn" onclick="insertList()">• Lista</button>
-        <button class="editor-tb-btn" onclick="togglePreview()">👁 Preview</button>
+    <div class="admin-field" style="grid-column:1/-1">
+      <label>Conteúdo — Editor Visual</label>
+      <div class="wysiwyg-toolbar">
+        <span class="tb-group">
+          <button class="tb-btn" onclick="wyFmt('h3')">H3</button>
+          <button class="tb-btn" onclick="wyFmt('h4')">H4</button>
+          <button class="tb-btn" onclick="wyFmt('p')">§ P</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="tb-btn" onclick="wyExec('bold')"><b>B</b></button>
+          <button class="tb-btn" onclick="wyExec('italic')"><i>I</i></button>
+          <button class="tb-btn" onclick="wyCode()">{ } código</button>
+          <button class="tb-btn" onclick="wyExec('insertUnorderedList')">• lista</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="tb-btn" onclick="wyColor('#14b8a6')" style="color:#14b8a6;font-weight:700">A teal</button>
+          <button class="tb-btn" onclick="wyColor('#f59e0b')" style="color:#f59e0b;font-weight:700">A gold</button>
+          <button class="tb-btn" onclick="wyColor('#e2e8f0')" style="color:#e2e8f0;font-weight:700">A branco</button>
+          <button class="tb-btn" onclick="wyColor('#f87171')" style="color:#f87171;font-weight:700">A vermelho</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="tb-btn" onclick="wyHighlight()">◼ destaque</button>
+          <button class="tb-btn" onclick="wyLink()">🔗 link</button>
+          <button class="tb-btn" onclick="wyExec('removeFormat')">✕ limpar</button>
+        </span>
+        <span class="tb-sep"></span>
+        <button class="tb-btn" id="wySrcBtn" onclick="wyToggleSource()">⟨/⟩ HTML</button>
       </div>
-      <textarea id="artBody" rows="10" placeholder="<h3>Título da seção</h3>&#10;<p>Conteúdo do artigo...</p>"></textarea>
-      <div class="editor-preview" id="artPreview" style="display:none"></div>
+      <div id="artEditor" class="wysiwyg-editor" contenteditable="true" onpaste="wyPaste(event)"></div>
+      <textarea id="artBody" class="wysiwyg-source" style="display:none" placeholder="HTML direto..."></textarea>
     </div>
 
     <div class="admin-error" id="editorError"></div>
@@ -3951,15 +3992,18 @@ function openEditor(id){
         document.getElementById('artReadTime').value  = d.readTime||'';
         document.getElementById('artDesc').value      = d.desc||'';
         document.getElementById('artDescEn').value    = d.descEn||'';
-        document.getElementById('artBody').value      = d.body||'';
-        document.getElementById('artPreview').style.display='none';
+        var _ed=document.getElementById('artEditor'); if(_ed){_ed.innerHTML=d.body||'';_ed.style.display='block';}
+        var _src=document.getElementById('artBody'); if(_src)_src.style.display='none';
+        if(typeof _wySrcMode!=='undefined')_wySrcMode=false;
       });
     }
   } else {
     t.textContent = '✏️ Novo Artigo';
-    ['artTitle','artTitleEn','artDesc','artDescEn','artBody','artDate','artReadTime'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-    document.getElementById('artDate').value = new Date().toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.','');
-    document.getElementById('artPreview').style.display='none';
+    ['artTitle','artTitleEn','artDesc','artDescEn','artDate','artReadTime'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('artDate').value=new Date().toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.','');
+    var _ed2=document.getElementById('artEditor');if(_ed2){_ed2.innerHTML='';_ed2.style.display='block';}
+    var _src2=document.getElementById('artBody');if(_src2){_src2.value='';_src2.style.display='none';}
+    if(typeof _wySrcMode!=='undefined')_wySrcMode=false;
   }
   m.classList.add('open');
 }
@@ -3969,29 +4013,59 @@ function closeEditor(){
   _editingId = null;
 }
 
-function insertTag(tag){
-  var ta = document.getElementById('artBody');
-  var start=ta.selectionStart, end=ta.selectionEnd;
-  var sel = ta.value.substring(start,end) || 'texto';
-  var ins = '<'+tag+'>'+sel+'</'+tag+'>';
-  ta.value = ta.value.substring(0,start)+ins+ta.value.substring(end);
-  ta.focus();
+/* ── WYSIWYG EDITOR ────────────────────────────── */
+var _wySrcMode=false;
+function wyFmt(tag){var ed=document.getElementById('artEditor');if(ed)ed.focus();document.execCommand('formatBlock',false,tag);}
+function wyExec(cmd){var ed=document.getElementById('artEditor');if(ed)ed.focus();document.execCommand(cmd);}
+function wyCode(){
+  var ed=document.getElementById('artEditor');if(ed)ed.focus();
+  var sel=window.getSelection();
+  if(!sel||!sel.rangeCount)return;
+  var txt=sel.toString();
+  if(!txt){document.execCommand('insertHTML',false,'<code>código</code>');return;}
+  document.execCommand('insertHTML',false,'<code>'+txt.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code>');
 }
-function insertList(){
-  var ta = document.getElementById('artBody');
-  var ins = '\n<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n  <li>Item 3</li>\n</ul>\n';
-  ta.value += ins; ta.focus();
+function wyColor(color){
+  var ed=document.getElementById('artEditor');if(ed)ed.focus();
+  var sel=window.getSelection();
+  if(!sel||!sel.toString()){alert('Selecione o texto primeiro.');return;}
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand('foreColor',false,color);
 }
-function togglePreview(){
-  var ta = document.getElementById('artBody');
-  var pv = document.getElementById('artPreview');
-  if(pv.style.display==='none'){
-    pv.innerHTML = ta.value || '<em>Nada para pré-visualizar</em>';
-    pv.style.display='block'; ta.style.display='none';
+function wyHighlight(){
+  var ed=document.getElementById('artEditor');if(ed)ed.focus();
+  var sel=window.getSelection();
+  if(!sel||!sel.toString()){alert('Selecione o texto primeiro.');return;}
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand('hiliteColor',false,'rgba(20,184,166,0.15)');
+}
+function wyLink(){
+  var url=prompt('URL do link:');if(!url)return;
+  var ed=document.getElementById('artEditor');if(ed)ed.focus();
+  var sel=window.getSelection();
+  if(sel&&sel.toString()){
+    document.execCommand('createLink',false,url);
+    if(ed)ed.querySelectorAll('a').forEach(function(a){if(!a.style.color)a.style.color='#14b8a6';a.target='_blank';});
   } else {
-    pv.style.display='none'; ta.style.display='block'; ta.focus();
+    var label=prompt('Texto do link:',url);
+    document.execCommand('insertHTML',false,'<a href="'+url+'" target="_blank" style="color:#14b8a6">'+(label||url)+'</a>');
   }
 }
+function wyToggleSource(){
+  var ed=document.getElementById('artEditor'),src=document.getElementById('artBody'),btn=document.getElementById('wySrcBtn');
+  if(!_wySrcMode){src.value=ed.innerHTML;src.style.display='block';ed.style.display='none';_wySrcMode=true;if(btn)btn.classList.add('active');}
+  else{ed.innerHTML=src.value;ed.style.display='block';src.style.display='none';_wySrcMode=false;if(btn)btn.classList.remove('active');}
+}
+function wyPaste(e){
+  e.preventDefault();
+  var html=(e.clipboardData||window.clipboardData).getData('text/html')||(e.clipboardData||window.clipboardData).getData('text/plain');
+  var clean=html.replace(/<style[^>]*>.*?<\/style>/gi,'').replace(/style="[^"]*color[^"]*"/gi,'').replace(/class="[^"]*"/gi,'');
+  document.execCommand('insertHTML',false,clean);
+}
+// Legacy stubs
+function insertTag(tag){wyFmt(tag);}
+function insertList(){wyExec('insertUnorderedList');}
+function togglePreview(){wyToggleSource();}
 
 function publishArticle(published){
   if(!window._wamDB){ alert('Firebase ainda carregando.'); return; }
@@ -4005,7 +4079,7 @@ function publishArticle(published){
   var readTime = document.getElementById('artReadTime').value.trim();
   var desc     = document.getElementById('artDesc').value.trim();
   var descEn   = document.getElementById('artDescEn').value.trim();
-  var body     = document.getElementById('artBody').value.trim();
+  var body=(typeof _wySrcMode!=='undefined'&&_wySrcMode)?(document.getElementById('artBody')||{value:''}).value.trim():(document.getElementById('artEditor')||{innerHTML:''}).innerHTML.trim();
   var errEl    = document.getElementById('editorError');
 
   if(!title || !body){ errEl.textContent = 'Título e conteúdo são obrigatórios.'; return; }
