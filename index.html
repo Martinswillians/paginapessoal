@@ -1274,6 +1274,48 @@ footer{text-align:center;padding:2.5rem;font-family:var(--mono);font-size:.68rem
 }
 .share-toast.show{opacity:1}
 
+/* ── QR SHARE MODAL ────────────────────────────────── */
+.qr-overlay{
+  position:fixed;inset:0;z-index:8000;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.qr-overlay.open{opacity:1;pointer-events:all}
+.qr-box{
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:16px;padding:2rem;width:min(340px,90vw);
+  text-align:center;position:relative;
+  transform:translateY(16px) scale(.97);transition:transform .25s;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.qr-overlay.open .qr-box{transform:translateY(0) scale(1)}
+.qr-close{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem}
+.qr-title{font-size:.75rem;font-family:var(--mono);color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem}
+.qr-img-wrap{
+  background:#fff;border-radius:10px;padding:1rem;
+  display:inline-block;margin-bottom:1.2rem;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.qr-img-wrap img{display:block;width:180px;height:180px}
+.qr-url{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:1.2rem;word-break:break-all;line-height:1.6}
+.qr-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.qr-action-btn{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.5rem 1rem;border-radius:7px;font-size:.72rem;
+  font-family:var(--mono);cursor:pointer;transition:all .2s;
+  border:.5px solid var(--border);background:var(--bg3);color:var(--muted);
+}
+.qr-action-btn:hover{background:rgba(20,184,166,.12);color:var(--teal);border-color:rgba(20,184,166,.3)}
+.qr-action-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.qr-action-btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.qr-action-btn svg{width:14px;height:14px;flex-shrink:0}
+/* Mobile: QR takes more screen */
+@media(max-width:768px){
+  .qr-box{padding:1.5rem}
+  .qr-img-wrap img{width:200px;height:200px}
+}
+
 /* ── DESKTOP CAROUSEL ARROWS ────────────────────────── */
 .carousel-wrap{position:relative}
 /* ── CAROUSEL NAV BAR (arrows + dots together) ──── */
@@ -1544,7 +1586,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
 <button class="a11y-btn" id="a11yBtn" onclick="toggleA11y()" aria-label="Acessibilidade">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
 </button>
-<button class="share-btn" id="shareBtn" onclick="shareProfile()" aria-label="Compartilhar perfil">
+<button class="share-btn" id="shareBtn" onclick="openQR()" aria-label="Compartilhar perfil">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
@@ -2626,7 +2668,7 @@ html[lang="en"] [data-lang-en].inline-flex-el{display:inline-flex}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
       <span data-lang-pt>Topo</span><span data-lang-en>Top</span>
     </button>
-    <button class="footer-action-btn" onclick="shareProfile()" aria-label="Compartilhar">
+    <button class="footer-action-btn" onclick="openQR()" aria-label="Compartilhar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       <span data-lang-pt>Compartilhar</span><span data-lang-en>Share</span>
     </button>
@@ -3332,23 +3374,80 @@ function arrowScroll(gridId, dir){
 }
 
 /* ── SHARE PROFILE function ───────────────────────── */
-function shareProfile(){
-  var url='https://martinswillians.github.io/paginapessoal/';
-  var title='Willians Martins | Analista de TI';
-  var text='Portfolio do Willians Martins — Analista de TI, Scrum Master, missao critica.';
-  if(navigator.share){
-    navigator.share({title:title,text:text,url:url}).catch(function(){});
+/* ── QR CODE & SHARE ─────────────────────────────────── */
+var _shareUrl = 'https://martinswillians.github.io/paginapessoal/';
+
+function shareProfile(customUrl){
+  var url = customUrl || _shareUrl;
+  openQR(url);
+}
+
+function openQR(url){
+  url = url || _shareUrl;
+  var overlay = document.getElementById('qrOverlay');
+  var img     = document.getElementById('qrImg');
+  var urlEl   = document.getElementById('qrUrl');
+  var nativeBtn = document.getElementById('qrNativeBtn');
+  if(!overlay) return;
+  // Generate QR via qrserver.com (no library needed)
+  var qrSize = window.innerWidth <= 768 ? 200 : 180;
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size='+qrSize+'x'+qrSize+'&format=png&color=0f172a&bgcolor=ffffff&qzone=1&data='+encodeURIComponent(url);
+  if(urlEl) urlEl.textContent = url.replace('https://','');
+  // Show native share button only on mobile/supported browsers
+  if(nativeBtn) nativeBtn.style.display = navigator.share ? 'flex' : 'none';
+  overlay.classList.add('open');
+  // Store current URL for actions
+  overlay.dataset.url = url;
+}
+
+function closeQR(){
+  var overlay = document.getElementById('qrOverlay');
+  if(overlay) overlay.classList.remove('open');
+}
+
+function qrCopyLink(){
+  var url = document.getElementById('qrOverlay').dataset.url || _shareUrl;
+  var msg = document.getElementById('qrCopied');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      if(msg){ msg.textContent='✅ Link copiado!'; msg.style.opacity='1'; setTimeout(function(){msg.style.opacity='0';},2000); }
+    }).catch(function(){ window.prompt('Copie o link:',url); });
   } else {
-    if(navigator.clipboard){
-      navigator.clipboard.writeText(url).then(function(){
-        var t=document.getElementById('shareToast');
-        if(t){t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
-      }).catch(function(){window.prompt('Copie o link:',url);});
-    } else {
-      window.prompt('Copie o link:',url);
-    }
+    window.prompt('Copie o link:',url);
   }
 }
+
+function qrWhatsApp(){
+  var url = document.getElementById('qrOverlay').dataset.url || _shareUrl;
+  var text = encodeURIComponent('Olá! Confira o portfólio de Willians Martins — Analista de TI 👉 ' + url);
+  window.open('https://api.whatsapp.com/send/?text='+text, '_blank');
+}
+
+function qrNativeShare(){
+  var url = document.getElementById('qrOverlay').dataset.url || _shareUrl;
+  if(navigator.share){
+    navigator.share({
+      title:'Willians Martins | Analista de TI',
+      text:'Portfólio de Willians Martins — Analista de TI, Scrum Master, Missão Crítica.',
+      url:url
+    }).catch(function(){});
+  }
+}
+
+function qrDownload(){
+  var url = document.getElementById('qrOverlay').dataset.url || _shareUrl;
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&color=0f172a&bgcolor=ffffff&qzone=2&data='+encodeURIComponent(url);
+  var a = document.createElement('a');
+  a.href = qrUrl;
+  a.download = 'qrcode-wam-dev.png';
+  a.target = '_blank';
+  a.click();
+}
+
+// Allow ESC to close QR modal
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') closeQR();
+});
 
 /* ── GH-CARD EXPAND/COLLAPSE (mobile only) ────────────── */
 (function(){
@@ -4227,16 +4326,7 @@ function openDynamicArticle(id, d){
 
 function shareArticleUrl(id, title){
   var url = location.origin + location.pathname + '?art=' + id;
-  var decoded = decodeURIComponent(title);
-  if(navigator.share){
-    navigator.share({title: decoded, url: url}).catch(function(){});
-  } else if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(function(){
-      alert('🔗 Link copiado: ' + url);
-    });
-  } else {
-    window.prompt('Copie o link:', url);
-  }
+  openQR(url);
 }
 
 function deleteArticle(id){
@@ -4265,6 +4355,37 @@ function togglePublish(id, current){
   setTimeout(tryOpen, 1200);
 })();
 </script>
+<!-- ── QR SHARE MODAL ────────────────────────────────── -->
+<div class="qr-overlay" id="qrOverlay" onclick="if(event.target===this)closeQR()">
+  <div class="qr-box">
+    <button class="qr-close" onclick="closeQR()">✕</button>
+    <p class="qr-title">📱 Compartilhar Portfólio</p>
+    <div class="qr-img-wrap">
+      <img id="qrImg" src="" alt="QR Code" width="180" height="180">
+    </div>
+    <p class="qr-url" id="qrUrl">martinswillians.github.io/paginapessoal/</p>
+    <div class="qr-actions">
+      <button class="qr-action-btn primary" onclick="qrCopyLink()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span data-lang-pt>Copiar link</span><span data-lang-en>Copy link</span>
+      </button>
+      <button class="qr-action-btn" onclick="qrWhatsApp()">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button class="qr-action-btn" id="qrNativeBtn" onclick="qrNativeShare()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span data-lang-pt>Compartilhar</span><span data-lang-en>Share</span>
+      </button>
+      <button class="qr-action-btn" onclick="qrDownload()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        QR Code
+      </button>
+    </div>
+    <p id="qrCopied" style="font-family:var(--mono);font-size:.65rem;color:var(--teal);margin-top:.8rem;opacity:0;transition:opacity .3s"></p>
+  </div>
+</div>
+
 <!-- ── CMS PANEL ──────────────────────────────────── -->
 <div class="cms-overlay" id="cmsOverlay">
   <div class="cms-wrap">
