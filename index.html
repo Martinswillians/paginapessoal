@@ -3866,6 +3866,10 @@ function closeCaseIfBg(e){
     </div>
     <div class="admin-error" id="loginError"></div>
     <button class="admin-btn" style="width:100%;margin-top:.5rem;justify-content:center" onclick="doLogin()">Entrar</button>
+    <div style="text-align:center;margin-top:.8rem">
+      <button onclick="doForgotPassword()" style="background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.65rem;color:var(--muted);transition:color .2s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">🔑 Esqueci minha senha</button>
+    </div>
+    <div id="loginSuccess" style="display:none;margin-top:.7rem;padding:.6rem .8rem;background:rgba(20,184,166,.1);border:.5px solid rgba(20,184,166,.3);border-radius:6px;font-family:var(--mono);font-size:.68rem;color:var(--teal);text-align:center"></div>
   </div>
 </div>
 
@@ -4062,11 +4066,44 @@ function doLogin(){
   window._wamAuth.signInWithEmailAndPassword(email, pass)
     .then(function(){ closeLoginModal(); })
     .catch(function(e){
-      errEl.textContent = e.code === 'auth/wrong-password' ? 'Senha incorreta.' :
-                          e.code === 'auth/user-not-found' ? 'Usuário não encontrado.' :
-                          e.code === 'auth/invalid-email' ? 'E-mail inválido.' : 'Erro: '+e.message;
+      errEl.textContent =
+        e.code === 'auth/wrong-password'        ? '❌ Senha incorreta.' :
+        e.code === 'auth/user-not-found'        ? '❌ E-mail não cadastrado.' :
+        e.code === 'auth/invalid-email'         ? '❌ E-mail inválido.' :
+        e.code === 'auth/invalid-credential'    ? '❌ E-mail ou senha incorretos. Verifique os dados ou use "Esqueci minha senha".' :
+        e.code === 'auth/too-many-requests'     ? '⚠️ Muitas tentativas. Aguarde alguns minutos ou redefina sua senha.' :
+        e.code === 'auth/network-request-failed'? '⚠️ Sem conexão. Verifique sua internet.' :
+        'Erro: '+e.message;
     });
 }
+function doForgotPassword(){
+  if(!window._wamAuth){ alert('Firebase ainda carregando, aguarde…'); return; }
+  var email = document.getElementById('loginEmail').value.trim();
+  var errEl = document.getElementById('loginError');
+  var succEl = document.getElementById('loginSuccess');
+  if(!email){
+    if(errEl) errEl.textContent = 'Digite seu e-mail antes de solicitar a redefinição.';
+    document.getElementById('loginEmail').focus();
+    return;
+  }
+  if(errEl) errEl.textContent = '';
+  if(succEl) succEl.style.display='none';
+  window._wamAuth.sendPasswordResetEmail(email)
+    .then(function(){
+      if(succEl){
+        succEl.textContent = '✅ E-mail de redefinição enviado para ' + email + '. Verifique sua caixa de entrada (e spam).';
+        succEl.style.display = 'block';
+      }
+      if(errEl) errEl.textContent = '';
+    })
+    .catch(function(e){
+      var msg = e.code === 'auth/user-not-found' ? 'Nenhuma conta encontrada com este e-mail.' :
+                e.code === 'auth/invalid-email'  ? 'E-mail inválido.' :
+                'Erro: ' + e.message;
+      if(errEl) errEl.textContent = msg;
+    });
+}
+
 function doLogout(){
   if(window._wamAuth) window._wamAuth.signOut();
 }
@@ -4293,7 +4330,7 @@ function loadFirestoreArticles(){
       container.appendChild(card);
     }); // end docs.forEach
     // Apply current language
-    applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+    if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
   }).catch(function(e){ console.warn('[WAM] Articles load error:', e); });
 }
 
@@ -4413,6 +4450,16 @@ function togglePublish(id, current){
 /* ══════════════════════════════════════════════════
    WAM CMS ENGINE — todas as 10 seções do portfólio
    ══════════════════════════════════════════════════ */
+// Safe language fallback if applyLang not in scope
+if(typeof applyLang==='undefined'){
+  window.applyLang=function(lang){
+    lang=lang||'pt';
+    document.querySelectorAll('[data-lang-pt],[data-lang-en]').forEach(function(el){
+      if(el.hasAttribute('data-lang-pt')) el.style.display=(lang==='pt'?'':'none');
+      if(el.hasAttribute('data-lang-en')) el.style.display=(lang==='en'?'':'none');
+    });
+  };
+}
 var CMS_SCHEMAS = {
   sobre:   { label:'Sobre Mim',    icon:'👤', type:'single',
     fields:[{k:'bio_pt',l:'Bio (PT)',t:'textarea',full:true},{k:'bio_en',l:'Bio (EN)',t:'textarea',full:true},{k:'role_pt',l:'Cargo (PT)',t:'text'},{k:'role_en',l:'Cargo (EN)',t:'text'}] },
@@ -4558,7 +4605,7 @@ function cmsRenderSection(id,data){
 function cmsRenderSobre(d){
   var b=document.querySelector('#sobre .sobre-bio');
   if(b&&d.bio_pt){b.innerHTML='<span data-lang-pt>'+d.bio_pt+'</span><span data-lang-en>'+(d.bio_en||d.bio_pt)+'</span>';}
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderProjetos(items){
   if(!items.length)return;
@@ -4569,7 +4616,7 @@ function cmsRenderProjetos(items){
     card.innerHTML='<div class="proj-banner" style="background:'+(p.gradient||'linear-gradient(135deg,#0a1a2e,#0d3058)')+'"><span class="proj-banner-icon">'+(p.icon||'🚀')+'</span></div><p class="proj-title"><span data-lang-pt>'+(p.title_pt||'')+'</span><span data-lang-en>'+(p.title_en||p.title_pt||'')+'</span></p><p class="proj-client"><span data-lang-pt>'+(p.client_pt||'')+'</span><span data-lang-en>'+(p.client_en||p.client_pt||'')+'</span></p><p class="proj-desc"><span data-lang-pt>'+(p.desc_pt||'')+'</span><span data-lang-en>'+(p.desc_en||p.desc_pt||'')+'</span></p><div class="proj-tags">'+tags.map(function(t){return'<span class="proj-tag">'+t+'</span>';}).join('')+'</div>';
     g.appendChild(card);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderDep(items){
   if(!items.length)return;
@@ -4579,7 +4626,7 @@ function cmsRenderDep(items){
     card.innerHTML='<p class="dep-quote"><span data-lang-pt>'+(d.text_pt||'')+'</span><span data-lang-en>'+(d.text_en||d.text_pt||'')+'</span></p><div class="dep-author"><div class="dep-avatar">'+(d.initials||((d.name||'?').substring(0,2).toUpperCase()))+'</div><div><p class="dep-name">'+(d.name||'')+'</p><p class="dep-role"><span data-lang-pt>'+(d.role_pt||'')+'</span><span data-lang-en>'+(d.role_en||d.role_pt||'')+'</span></p><div class="dep-stars">★★★★★</div></div></div>';
     g.appendChild(card);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderRepos(items){
   if(!items.length)return;
@@ -4590,7 +4637,7 @@ function cmsRenderRepos(items){
     card.innerHTML='<div class="gh-card-header"><svg class="gh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span class="gh-repo-name">'+(r.name||'')+'</span></div><p class="gh-desc"><span data-lang-pt>'+(r.desc_pt||'')+'</span><span data-lang-en>'+(r.desc_en||r.desc_pt||'')+'</span></p><div class="gh-meta">'+tags.map(function(t){return'<span class="gh-tag">'+t+'</span>';}).join('')+'</div><div class="gh-link-row"><span class="gh-link-text">'+(r.url||'').replace('https://github.com/','')+'</span><span class="gh-arrow">→</span></div>';
     g.appendChild(card);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderSites(items){
   if(!items.length)return;
@@ -4601,7 +4648,7 @@ function cmsRenderSites(items){
     card.innerHTML='<div class="site-preview" style="background:'+(s.gradient||'linear-gradient(135deg,#0a1a2e,#0d3058)')+'"><span style="font-size:2rem">'+(s.icon||'🌐')+'</span></div><div class="site-body"><p class="site-title">'+(s.title||'')+'</p><p class="site-url">'+(s.url||'')+'</p><p class="site-desc"><span data-lang-pt>'+(s.desc_pt||'')+'</span><span data-lang-en>'+(s.desc_en||s.desc_pt||'')+'</span></p><a href="'+(s.url||'#')+'" target="_blank" class="site-visit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Visitar site →</a></div>';
     g.appendChild(card);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderExp(items){
   if(!items.length)return;
@@ -4615,7 +4662,7 @@ function cmsRenderExp(items){
     item.innerHTML='<div class="exp-period">'+(e.period_start||'')+' — '+(e.period_end||'')+(cur?'<br><span class="exp-current"><span data-lang-pt>● atual</span><span data-lang-en>● current</span></span>':'')+'</div><div><p class="exp-title"><span data-lang-pt>'+(e.title_pt||'')+'</span><span data-lang-en>'+(e.title_en||e.title_pt||'')+'</span></p><div class="exp-company-box"><p class="exp-company"><span data-lang-pt>'+(e.company_pt||'')+'</span><span data-lang-en>'+(e.company_en||e.company_pt||'')+'</span></p></div><ul class="exp-ul">'+bPt.map(function(b,i){return'<li><span data-lang-pt>'+b+'</span><span data-lang-en>'+(bEn[i]||b)+'</span></li>';}).join('')+'</ul><div class="exp-tags">'+tags.map(function(t){return'<span class="exp-tag">'+t+'</span>';}).join('')+'</div></div>';
     g.appendChild(item);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderFormacao(items){
   if(!items.length)return;
@@ -4625,7 +4672,7 @@ function cmsRenderFormacao(items){
     el.innerHTML='<div class="form-icon"><span data-lang-pt>// '+(f.type_pt||'')+'</span><span data-lang-en>// '+(f.type_en||f.type_pt||'')+'</span></div><p class="form-degree"><span data-lang-pt>'+(f.degree_pt||'')+'</span><span data-lang-en>'+(f.degree_en||f.degree_pt||'')+'</span></p><p class="form-school">'+(f.institution||'')+(f.year?' · '+f.year:'')+'</p>'+(f.status?'<p style="font-size:.65rem;color:var(--teal);margin-top:.3rem">'+f.status+'</p>':'');
     g.appendChild(el);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderCerts(items){
   if(!items.length)return;
@@ -4635,7 +4682,7 @@ function cmsRenderCerts(items){
     el.innerHTML='<span class="cert-icon">◆</span><div><div class="cert-name"><span data-lang-pt>'+(c.name||'')+'</span><span data-lang-en>'+(c.name_en||c.name||'')+'</span></div><div class="cert-source">'+(c.source||'')+'</div></div>';
     g.appendChild(el);
   });
-  applyLang(document.documentElement.getAttribute('data-lang')||'pt');
+  if(typeof applyLang==='function') applyLang(document.documentElement.getAttribute('data-lang')||'pt');
 }
 function cmsRenderContato(d){
   if(!d)return;
